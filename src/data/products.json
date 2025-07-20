@@ -1,0 +1,167 @@
+[
+  {
+    "id": 1,
+    "name": "Millet Mocktail (Original Flavor)",
+    "description": "A unique, non-alcoholic, energy-packed beverage made from locally grown millets, combined with spices and other value-added ingredients. This drink is designed to enhance your health while supporting sustainable agriculture.",
+    "category": "Post Harvest and Food Technology",
+    "startup": "Agrider Biotech LLP",
+    "quantity": "200 ML",
+    "price": "₹60",
+    "contact": {
+      "name": "Ravishankar S Nilegar",
+      "phone": "9036408947",
+      "email": "agriderbiotech@gmail.com"
+    },
+    "image": "/uploads/3ac7d9bd-f271-4025-8101-4eaa6df600de.png"
+  },
+  {
+    "id": 2,
+    "name": "Millet Mocktail (Premium – Mint Flavored)",
+    "description": "Premium version of our signature millet mocktail with refreshing mint flavor. A healthy, energizing beverage perfect for modern lifestyle needs.",
+    "category": "Post Harvest and Food Technology",
+    "startup": "Agrider Biotech LLP",
+    "quantity": "200 ML",
+    "price": "₹90",
+    "contact": {
+      "name": "Ravishankar S Nilegar",
+      "phone": "9036408947",
+      "email": "agriderbiotech@gmail.com"
+    },
+    "image": "/uploads/84b7c8ec-2e6d-4f41-b0c8-3ca3f6d6aea4.png"
+  },
+  {
+    "id": 3,
+    "name": "Finger Millet (Ragi) Powder",
+    "description": "Premium finger millet powder rich in calcium, iron, and fiber. Perfect for making nutritious porridge, dosas, and other traditional dishes.",
+    "category": "Organic Farming",
+    "startup": "Shree Aarogya Food & Beverages Products",
+    "quantity": "500g",
+    "price": "₹120",
+    "contact": {
+      "name": "Raghu R S",
+      "phone": "9535282617",
+      "email": "raghursraghurs36@gmail.com"
+    },
+    "image": "/uploads/3c221a05-366a-486b-b8fa-782066e96ebd.png"
+  },
+  {
+    "id": 4,
+    "name": "Foxtail Millet Powder",
+    "description": "Organic foxtail millet powder, a gluten-free alternative rich in protein and minerals. Ideal for diabetic-friendly diets and weight management.",
+    "category": "Organic Farming",
+    "startup": "Shree Aarogya Food & Beverages Products",
+    "quantity": "500g",
+    "price": "₹140",
+    "contact": {
+      "name": "Raghu R S",
+      "phone": "9535282617",
+      "email": "raghursraghurs36@gmail.com"
+    },
+    "image": "/uploads/b1e93ad8-63c1-4687-8de1-faedef2cfb01.png"
+  },
+  {
+    "id": 5,
+    "name": "Fresh Sugarcane Juice",
+    "description": "Pure, unadulterated sugarcane juice extracted from fresh sugarcane. Rich in natural sugars and minerals, perfect for instant energy.",
+    "category": "Post Harvest and Food Technology",
+    "startup": "Sri Om Sai Sugar Allied Production Pvt. Ltd. (SOSSA)",
+    "quantity": "1 Liter",
+    "price": "₹80",
+    "contact": {
+      "name": "Rajgopal I Patil",
+      "phone": "9740271821",
+      "email": "sairaju.patil500002@gmail.com"
+    },
+    "image": "/uploads/be64fe3a-981a-4470-8355-035240893232.png"
+  },
+  {
+    "id": 6,
+    "name": "Liquid Jaggery",
+    "description": "Natural liquid jaggery made from pure sugarcane juice. A healthier alternative to refined sugar, rich in minerals and antioxidants.",
+    "category": "Post Harvest and Food Technology",
+    "startup": "Sri Om Sai Sugar Allied Production Pvt. Ltd. (SOSSA)",
+    "quantity": "500ml",
+    "price": "₹150",
+    "contact": {
+      "name": "Rajgopal I Patil",
+      "phone": "9740271821",
+      "email": "sairaju.patil500002@gmail.com"
+    },
+    "image": "/uploads/e0a19837-98c4-48a0-a174-f404bbcfa8ea.png"
+  },
+  {
+    "id": 7,
+    "name": "Agri-Health Supplement (Multivitamin)",
+    "description": "Comprehensive multivitamin supplement specially formulated for farmers and agricultural workers. Supports energy, immunity, and overall health.",
+    "category": "Agricultural Biotechnology",
+    "startup": "Nutrica Supplements LLP",
+    "quantity": "60 Tablets",
+    "price": "₹450",
+    "contact": {
+      "name": "Sunil Jalwadi",
+      "phone": "08043856592",
+      "email": "nutricasupplements@gmail.com"
+    },
+    "image": "/uploads/4c75e1ea-b48f-4c72-862f-6d60f399c071.png"
+  },
+  {
+    "id": 8,
+    "name": "Organic Protein Powder",
+    "description": "Plant-based protein powder derived from agricultural sources. High in essential amino acids, perfect for muscle building and recovery.",
+    "category": "Agricultural Biotechnology",
+    "startup": "Nutrica Supplements LLP",
+    "quantity": "500g",
+    "price": "₹800",
+    "contact": {
+      "name": "Sunil Jalwadi",
+      "phone": "08043856592",
+      "email": "nutricasupplements@gmail.com"
+    },
+    "image": "/uploads/placeholder.svg"
+  },
+  {
+    "id": 9,
+    "name": "Omega-3 Fish Oil Capsules",
+    "description": "Premium fish oil capsules rich in Omega-3 fatty acids. Supports heart health, brain function, and reduces inflammation.",
+    "category": "Agricultural Biotechnology",
+    "startup": "Nutrica Supplements LLP",
+    "quantity": "60 Capsules",
+    "price": "₹600",
+    "contact": {
+      "name": "Sunil Jalwadi",
+      "phone": "08043856592",
+      "email": "nutricasupplements@gmail.com"
+    },
+    "image": "/uploads/placeholder.svg"
+  },
+  {
+    "id": 10,
+    "name": "Vitamin D3 Supplement",
+    "description": "High-potency Vitamin D3 supplement for bone health and immune system support. Essential for overall well-being.",
+    "category": "Agricultural Biotechnology",
+    "startup": "Nutrica Supplements LLP",
+    "quantity": "60 Tablets",
+    "price": "₹350",
+    "contact": {
+      "name": "Sunil Jalwadi",
+      "phone": "08043856592",
+      "email": "nutricasupplements@gmail.com"
+    },
+    "image": "/uploads/placeholder.svg"
+  },
+  {
+    "id": 11,
+    "name": "Calcium + Magnesium Tablets",
+    "description": "Combined calcium and magnesium supplement for strong bones and muscle function. Essential for active agricultural workers.",
+    "category": "Agricultural Biotechnology",
+    "startup": "Nutrica Supplements LLP",
+    "quantity": "60 Tablets",
+    "price": "₹400",
+    "contact": {
+      "name": "Sunil Jalwadi",
+      "phone": "08043856592",
+      "email": "nutricasupplements@gmail.com"
+    },
+    "image": "/uploads/placeholder.svg"
+  }
+]

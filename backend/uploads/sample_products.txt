@@ -1,0 +1,6 @@
+name	description	category	startup	quantity	price	contact.name	contact.phone	contact.email
+Bio Fertilizer Pack	Organic bio fertilizer for sustainable farming	Fertilizers	EcoFarm Solutions	150	750	Sarah Wilson	9876543213	sarah@ecofarm.com
+Drip Irrigation Kit	Complete drip irrigation system for small farms	Irrigation	WaterTech	75	1800	David Brown	9876543214	david@watertech.com
+Hybrid Corn Seeds	High-yield hybrid corn seeds	Seeds	SeedMaster	300	400	Lisa Chen	9876543215	lisa@seedmaster.com
+Soil Testing Kit	Complete soil testing kit with pH meter	Testing Equipment	SoilLab	100	1200	Robert Kumar	9876543216	robert@soillab.com
+Pesticide Sprayer	Manual pesticide sprayer for small farms	Equipment	FarmTools	200	350	Maria Garcia	9876543217	maria@farmtools.com
