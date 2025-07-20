@@ -6,6 +6,7 @@ import { Dialog } from '@headlessui/react';
 const Profile: React.FC = () => {
     const navigate = useNavigate();
     const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
+    const userId = user?._id;
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState({
         name: user?.name || '',
@@ -28,36 +29,44 @@ const Profile: React.FC = () => {
     const [fetchError, setFetchError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user) {
+        const controller = new AbortController();
+        if (!userId) {
             navigate('/login');
-        } else if (user._id) {
-            fetch(`http://localhost:5000/api/orders?userId=${user._id}`)
+        } else {
+            fetch(`http://localhost:5000/api/orders?userId=${userId}`, { signal: controller.signal })
                 .then(res => {
                     if (!res.ok) throw new Error('Failed to fetch orders');
                     return res.json();
                 })
                 .then(data => Array.isArray(data) ? setOrders(data) : setOrders([]))
                 .catch((err) => {
-                    setOrders([]);
-                    setFetchError('Could not fetch orders. Backend may be down.');
+                    if (err.name !== 'AbortError') {
+                        setOrders([]);
+                        setFetchError('Could not fetch orders. Backend may be down.');
+                    }
                 });
         }
-    }, [user, navigate]);
+        return () => controller.abort();
+    }, [userId, navigate]);
 
     // Fetch addresses on mount or user change
     useEffect(() => {
+        const controller = new AbortController();
         if (user && user._id) {
-            fetch(`http://localhost:5000/api/auth/${user._id}`)
+            fetch(`http://localhost:5000/api/auth/${user._id}`, { signal: controller.signal })
                 .then(res => {
                     if (!res.ok) throw new Error('Failed to fetch user');
                     return res.json();
                 })
                 .then(data => setAddresses(data?.addresses || []))
-                .catch(() => {
-                    setAddresses([]);
-                    setFetchError('Could not fetch user profile. Backend may be down.');
+                .catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        setAddresses([]);
+                        setFetchError('Could not fetch user profile. Backend may be down.');
+                    }
                 });
         }
+        return () => controller.abort();
     }, [user]);
 
     if (fetchError) {
