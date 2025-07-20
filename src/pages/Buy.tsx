@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { BuyForm } from "@/components/BuyForm";
 import type { BuyFormData } from "@/components/BuyForm";
-import { productData } from "@/data/products";
 
 export default function Buy() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const productId = Number(searchParams.get("productId"));
-  const product = productData.find((p) => p.id === productId);
+  const productId = searchParams.get("productId");
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -19,10 +20,37 @@ export default function Buy() {
     }
   }, [navigate]);
 
-  if (!product) {
+  useEffect(() => {
+    if (!productId) {
+      setError("No product ID provided");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError("");
+    fetch(`/api/products/${productId}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Product not found");
+        const data = await res.json();
+        setProduct(data);
+      })
+      .catch(() => setError("Product Not Found"))
+      .finally(() => setLoading(false));
+  }, [productId]);
+
+  if (loading) {
     return (
       <div className="max-w-xl mx-auto py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading product...</p>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="max-w-xl mx-auto py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4">{error || "Product Not Found"}</h2>
         <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
     );
@@ -60,11 +88,7 @@ export default function Buy() {
             </div>
           </div>
         </div>
-
-        <div>
-          <h3 className="text-2xl font-semibold text-agri-green mb-4">Customer Details</h3>
-          <BuyForm product={product} onSubmit={handleSubmit} isSubmitting={submitting} />
-        </div>
+        <BuyForm product={product} onSubmit={handleSubmit} isSubmitting={submitting} />
       </div>
     </div>
   );

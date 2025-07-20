@@ -177,7 +177,7 @@ export default function Products() {
             filteredProducts.map((product) => {
               // Convert ApiProduct to Product format
               const productForCard: Product = {
-                id: parseInt(product._id.replace(/[^0-9]/g, '')) || Math.random(), // Convert string ID to number
+                id: product._id, // Use MongoDB _id as id
                 name: product.name,
                 description: product.description,
                 category: product.category,

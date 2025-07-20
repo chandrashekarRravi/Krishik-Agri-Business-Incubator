@@ -76,23 +76,18 @@ router.post('/', async (req, res) => {
 
 // Get order history for a user or all orders if userId=all
 router.get('/', async (req, res) => {
-  console.log(`[${new Date().toISOString()}] GET /api/orders`, req.query);
   try {
     const { userId } = req.query;
     let orders;
     if (userId === 'all') {
       orders = await Order.find().populate('product').sort({ createdAt: -1 });
-      console.log(`[${new Date().toISOString()}] Returned all orders (${orders.length})`);
     } else if (userId) {
       orders = await Order.find({ user: userId }).populate('product').sort({ createdAt: -1 });
-      console.log(`[${new Date().toISOString()}] Returned orders for user ${userId} (${orders.length})`);
     } else {
-      console.warn(`[${new Date().toISOString()}] userId is required for /api/orders`);
       return res.status(400).json({ message: 'userId is required' });
     }
     res.json(orders);
   } catch (err) {
-    console.error(`[${new Date().toISOString()}] Error in GET /api/orders:`, err);
     res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
   }
 });
