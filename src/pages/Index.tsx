@@ -42,11 +42,11 @@ const Index = () => {
         <section className="relative w-full bg-[#181c23] py-6 border-b border-neutral-800">
           <div className="max-w-5xl mx-auto flex flex-col items-center">
             <div className="flex flex-row flex-wrap justify-center gap-4 mb-4">
-              <img src="/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/UAS Dharwad(new circular).png" alt="UAS Dharwad Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/Krishik(new circular).png" alt="Krishik Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/ASTRA(new circular).png" alt="ASTRA Logo" className="h-16 w-16 object-contain rounded-full" />
+              <img src="./public/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-16 w-16 object-contain rounded-full" />
+              <img src="./public/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-16 w-16 object-contain rounded-full" />
+              <img src="./public/uploads/UAS Dharwad(new circular).png" alt="UAS Dharwad Logo" className="h-16 w-16 object-contain rounded-full" />
+              <img src="./public/uploads/Krishik(new circular).png" alt="Krishik Logo" className="h-16 w-16 object-contain rounded-full" />
+              <img src="./public/uploads/ASTRA(new circular).png" alt="ASTRA Logo" className="h-16 w-16 object-contain rounded-full" />
             </div>
             <div className="text-center">
               <h1 className="text-3xl md:text-4xl font-extrabold text-agri-yellow mb-2 tracking-tight">Krishik Agri Business Incubator</h1>
@@ -129,7 +129,7 @@ const Index = () => {
 
             <div className="mb-12">
               <img
-                src="/uploads/4a3634bb-fd35-4b15-826a-e6fbc8d1a1ab.png"
+                src="./public/uploads/4a3634bb-fd35-4b15-826a-e6fbc8d1a1ab.png"
                 alt="Focus Areas"
                 className="mx-auto max-w-full h-auto rounded-lg shadow-elevated"
               />

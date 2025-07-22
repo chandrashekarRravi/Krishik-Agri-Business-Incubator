@@ -15,11 +15,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onMoreInfo })
     <Card className="shadow-card hover:shadow-elevated transition-all duration-300 hover:scale-105">
         <CardHeader className="pb-3">
             {product.image && (
-                <div className="mb-4 rounded-lg overflow-hidden bg-gray-50">
+                <div className="mb-4 rounded-lg overflow-hidden bg-gray-50 aspect-[4/3] w-full">
                     <LazyImage
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-48 object-contain"
+                        className="w-full h-full object-cover"
                     />
                 </div>
             )}

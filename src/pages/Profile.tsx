@@ -28,37 +28,43 @@ const Profile: React.FC = () => {
     const [fetchError, setFetchError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else if (user._id) {
-            fetch(`http://localhost:5000/api/orders?userId=${user._id}`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to fetch orders');
-                    return res.json();
-                })
-                .then(data => Array.isArray(data) ? setOrders(data) : setOrders([]))
-                .catch((err) => {
-                    setOrders([]);
-                    setFetchError('Could not fetch orders. Backend may be down.');
-                });
-        }
-    }, [user, navigate]);
+        if (!user || !user._id) return;
+        const token = localStorage.getItem('token');
+        fetch(`http://localhost:5000/api/orders?userId=${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to fetch orders');
+                return res.json();
+            })
+            .then(data => {
+                if (data.orders) setOrders(data.orders);
+                else if (Array.isArray(data)) setOrders(data);
+                else setOrders([]);
+            })
+            .catch(() => {
+                setOrders([]);
+                setFetchError('Could not fetch orders. Backend may be down.');
+            });
+    }, [user && user._id]);
 
     // Fetch addresses on mount or user change
     useEffect(() => {
-        if (user && user._id) {
-            fetch(`http://localhost:5000/api/auth/${user._id}`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to fetch user');
-                    return res.json();
-                })
-                .then(data => setAddresses(data?.addresses || []))
-                .catch(() => {
-                    setAddresses([]);
-                    setFetchError('Could not fetch user profile. Backend may be down.');
-                });
-        }
-    }, [user]);
+        if (!user || !user._id) return;
+        const token = localStorage.getItem('token');
+        fetch(`http://localhost:5000/api/auth/${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to fetch user');
+                return res.json();
+            })
+            .then(data => setAddresses(data?.addresses || []))
+            .catch(() => {
+                setAddresses([]);
+                setFetchError('Could not fetch user profile. Backend may be down.');
+            });
+    }, [user && user._id]);
 
     if (fetchError) {
         return (
@@ -146,9 +152,10 @@ const Profile: React.FC = () => {
     };
     const handleAddAddress = async () => {
         if (!user?._id || !addressForm.address) return;
+        const token = localStorage.getItem('token');
         const res = await fetch('http://localhost:5000/api/auth/address', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ userId: user._id, ...addressForm })
         });
         if (res.ok) {
@@ -165,9 +172,10 @@ const Profile: React.FC = () => {
     };
     const handleSaveEditAddress = async () => {
         if (!user?._id || editAddressIndex === null) return;
+        const token = localStorage.getItem('token');
         const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/${editAddressIndex}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify(addressForm)
         });
         if (res.ok) {
@@ -180,7 +188,8 @@ const Profile: React.FC = () => {
     };
     const handleDeleteAddress = async (idx: number) => {
         if (!user?._id) return;
-        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/${idx}`, { method: 'DELETE' });
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/${idx}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);
@@ -188,7 +197,8 @@ const Profile: React.FC = () => {
     };
     const handleSetDefaultAddress = async (idx: number) => {
         if (!user?._id) return;
-        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/default/${idx}`, { method: 'PATCH' });
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/default/${idx}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);
@@ -196,9 +206,9 @@ const Profile: React.FC = () => {
     };
 
     // Helper for order status progress
-    const statusSteps = ["Processing", "Shipped", "Delivered"];
+    const statusSteps = ["processing", "shipped", "delivered"];
     function OrderStatusProgress({ status }: { status: string }) {
-        const currentStep = statusSteps.indexOf(status);
+        const currentStep = statusSteps.indexOf(status.toLowerCase());
         return (
             <div className="flex items-center gap-2 my-2">
                 {statusSteps.map((step, idx) => (

@@ -1,212 +1,94 @@
 # Krishik Agri Business Hub
 
-A comprehensive web platform for the Krishik Agri Business Incubator, showcasing innovative agricultural products and startups from the University of Agricultural Sciences, Dharwad.
+A full-stack platform for managing agricultural products, startups, and orders, with real-world notification and admin features.
 
-## 🚀 Features
+## Features
 
-- **Product Showcase**: Browse and purchase innovative agricultural products
-- **Startup Directory**: Explore incubated startups and their innovations
-- **Focus Areas**: Comprehensive coverage of agricultural innovation domains
-- **Contact Management**: Easy communication with startups and the incubator
-- **Responsive Design**: Optimized for all devices and screen sizes
-- **Form Validation**: Robust form handling with real-time validation
-- **SEO Optimized**: Built-in SEO features for better discoverability
-- **Analytics**: User interaction tracking and insights
-- **Authentication**: User management system (ready for backend integration)
+- **Product & Startup Management:**
+  - Add, edit, delete, and filter products and startups via the Admin Dashboard.
+  - Prevent duplicate startups and products (strict checks on name, contact, etc.).
+- **Order Placement:**
+  - Users can place orders for products.
+  - Orders are saved in MongoDB.
+- **Notifications:**
+  - **User:** Receives a confirmation email on order.
+  - **Startup:** Receives an email and SMS (via Twilio) with order and customer details.
+  - **Admin:** Sees real-time notifications in the dashboard (bell icon) for every order.
+- **Production-Ready:**
+  - All secrets and credentials are managed via environment variables.
+  - Robust error handling: orders are always saved, even if notifications fail.
+  - Logging for all notification events and errors.
 
-## 🛠️ Tech Stack
+## Tech Stack
+- **Frontend:** React, Vite, Tailwind CSS
+- **Backend:** Node.js, Express, MongoDB (Mongoose)
+- **Notifications:** Nodemailer (Gmail), Twilio (SMS)
 
-- **Frontend**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **State Management**: React Query for server state
-- **Forms**: React Hook Form with Yup validation
-- **Routing**: React Router v6
-- **SEO**: React Helmet Async
-- **Analytics**: Google Analytics 4 ready
-- **Icons**: Lucide React
+## Setup Instructions
 
-## 📦 Installation
+### 1. Clone the Repository
+```sh
+git clone <repo-url>
+cd krishik-agri
+```
 
-### Prerequisites
+### 2. Install Dependencies
+#### Backend
+```sh
+cd backend
+npm install
+```
+#### Frontend
+```sh
+cd ../
+npm install
+```
 
-- Node.js 18+ 
-- npm or yarn
+### 3. Environment Variables
+Create a `.env` file in `backend/` with the following:
+```env
+MONGODB_URI=mongodb://localhost:27017/krishik-agri
+JWT_SECRET=your_jwt_secret
+GMAIL_USER=your_gmail@gmail.com
+GMAIL_PASS=your_gmail_app_password
+TWILIO_ACCOUNT_SID=your_twilio_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+```
 
-### Setup
+### 4. Start MongoDB
+Make sure MongoDB is running locally or update the URI for your cloud instance.
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd krishik-agri
-   ```
+### 5. Start the Backend
+```sh
+cd backend
+npm start
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
+### 6. Start the Frontend
+```sh
 npm run dev
 ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:8080`
+### 7. Admin User Setup
+- Use the provided script or manually set `isAdmin: true` for your user in the database.
+- Only admin users can access the dashboard and notifications.
 
-## 🏗️ Project Structure
+## Usage
+- **Admin Dashboard:** Manage products, startups, orders, and view notifications.
+- **Order Flow:**
+  1. User places an order.
+  2. User receives confirmation email.
+  3. Startup receives order email and SMS.
+  4. Admin sees a notification in the dashboard.
 
-```
-src/
-├── components/          # Reusable UI components
-│   ├── ui/             # shadcn/ui components
-│   ├── ProductCard.tsx # Product display component
-│   ├── StartupCard.tsx # Startup display component
-│   ├── ContactForm.tsx # Contact form with validation
-│   └── ...
-├── data/               # Centralized data files
-│   ├── products.ts     # Product data
-│   ├── startups.ts     # Startup data
-│   └── focusAreas.ts   # Focus area data
-├── hooks/              # Custom React hooks
-│   └── useAuth.ts      # Authentication hook
-├── pages/              # Page components
-│   ├── Index.tsx       # Home page
-│   ├── Products.tsx    # Products listing
-│   ├── Startups.tsx    # Startups listing
-│   └── ...
-├── types/              # TypeScript type definitions
-│   └── index.ts        # Centralized types
-└── App.tsx             # Main application component
-```
+## Troubleshooting
+- **500/403 Errors:** Ensure backend is running, `.env` is set, and you are logged in as admin.
+- **No Startup Notification:** Ensure product's `startup` field matches Startup's `name` exactly (case-insensitive, trimmed).
+- **Twilio/Gmail Issues:** Double-check credentials and phone/email formats.
 
-## 🔧 Configuration
+## Contributing
+Pull requests welcome! Please open an issue first to discuss major changes.
 
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_GA_TRACKING_ID=G-XXXXXXXXXX
-VITE_API_BASE_URL=https://api.yourbackend.com
-```
-
-### Customization
-
-1. **Colors**: Update `tailwind.config.ts` for brand colors
-2. **Data**: Modify files in `src/data/` to update content
-3. **Styling**: Customize components in `src/components/`
-
-## 🚀 Deployment
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-### Deploy Options
-
-1. **Vercel** (Recommended)
-   ```bash
-   npm install -g vercel
-   vercel
-   ```
-
-2. **Netlify**
-   - Connect your repository
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-
-3. **Static Hosting**
-   - Upload `dist/` folder to your hosting provider
-   - Configure SPA routing (all routes redirect to index.html)
-
-## 📝 Contributing
-
-### Development Workflow
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make your changes**
-4. **Add tests** (if applicable)
-5. **Commit your changes**
-   ```bash
-   git commit -m "feat: add your feature description"
-   ```
-6. **Push to your branch**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-7. **Create a Pull Request**
-
-### Code Style
-
-- Use TypeScript for all new code
-- Follow ESLint configuration
-- Use Prettier for formatting
-- Write meaningful commit messages
-- Add JSDoc comments for complex functions
-
-### Testing
-
-```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm test:watch
-
-# Run tests with coverage
-npm test:coverage
-```
-
-## 🔒 Security
-
-- All forms include CSRF protection
-- Input validation on both client and server
-- Secure authentication flow
-- HTTPS enforcement in production
-
-## 📊 Analytics
-
-The application includes Google Analytics 4 integration:
-
-- Page view tracking
-- Custom event tracking
-- Form submission tracking
-- User interaction analytics
-
-## 🌐 SEO
-
-- Meta tags optimization
-- Open Graph support
-- Twitter Card support
-- Structured data markup
-- Sitemap generation ready
-
-## 🤝 Support
-
-For support and questions:
-
-- **Email**: info@krishikagri.com
-- **Phone**: +91 836 221 5284
-- **Address**: University of Agricultural Sciences, Dharwad, Karnataka 580005
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- University of Agricultural Sciences, Dharwad
-- RKVY-Innovation and Agri-Entrepreneurship Programme
-- Ministry of Agriculture & Farmers' Welfare, Government of India
-- All participating startups and innovators
-
----
-
-**Built with ❤️ for Agricultural Innovation**
+## License
+[MIT](LICENSE)

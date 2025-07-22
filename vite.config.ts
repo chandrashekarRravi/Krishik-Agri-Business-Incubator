@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': 'http://localhost:5000'
+      '/api': 'http://localhost:5000',
+      '/uploads': 'http://localhost:5000',
     }
   },
   plugins: [

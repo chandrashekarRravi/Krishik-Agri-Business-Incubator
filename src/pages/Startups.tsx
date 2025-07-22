@@ -1,20 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { StartupCard } from "@/components/StartupCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, ExternalLink } from "lucide-react";
-import { startupData, focusAreaFilters } from "@/data/startups";
 import type { Startup } from "@/types";
 
 export default function Startups() {
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [startups, setStartups] = useState<Startup[]>([]);
+  const [focusAreaFilters, setFocusAreaFilters] = useState<string[]>(["All"]);
+  const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [selectedStartup, setSelectedStartup] = useState<Startup | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStartups = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/startups");
+        if (res.ok) {
+          const data = await res.json();
+          // Ensure data is an array of Startup
+          const startupsData: Startup[] = Array.isArray(data) ? data : [];
+          setStartups(startupsData);
+          // Dynamically generate focus area filters
+          const focusAreas = Array.from(new Set(startupsData.map((s) => String(s.focusArea))));
+          setFocusAreaFilters(["All", ...focusAreas]);
+        }
+      } catch (err: any) {
+        setStartups([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStartups();
+  }, []);
 
   const filteredStartups = selectedFilter === "All"
-    ? startupData
-    : startupData.filter(startup => startup.focusArea === selectedFilter);
+    ? startups
+    : startups.filter(startup => startup.focusArea === selectedFilter);
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,9 +67,9 @@ export default function Startups() {
             <div className="flex flex-wrap gap-3 justify-center">
               {focusAreaFilters.map((filter) => (
                 <Button
-                  key={filter}
+                  key={String(filter)}
                   variant={selectedFilter === filter ? "default" : "outline"}
-                  onClick={() => setSelectedFilter(filter)}
+                  onClick={() => setSelectedFilter(String(filter))}
                   className={`
                     ${selectedFilter === filter
                       ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
@@ -61,11 +86,18 @@ export default function Startups() {
         </div>
 
         {/* Startups Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {filteredStartups.map((startup) => (
-            <StartupCard key={startup.id} startup={startup} onMoreInfo={setSelectedStartup} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mr-2"></div>
+            <span className="text-muted-foreground">Loading startups...</span>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {filteredStartups.map((startup) => (
+              <StartupCard key={(startup as any)._id ?? (startup as any).id} startup={startup} onMoreInfo={setSelectedStartup} />
+            ))}
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="mt-16 text-center bg-gradient-hero text-white rounded-lg p-8">

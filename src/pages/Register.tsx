@@ -8,9 +8,7 @@ const Register: React.FC = () => {
         phone: '',
         address: '',
         password: '',
-        profile: null as File | null,
     });
-    const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -19,34 +17,14 @@ const Register: React.FC = () => {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        setForm((prev) => ({ ...prev, profile: file }));
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setPreview(reader.result as string);
-            reader.readAsDataURL(file);
-        } else {
-            setPreview(null);
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        const formData = new FormData();
-        formData.append('name', form.name);
-        formData.append('email', form.email);
-        formData.append('phone', form.phone);
-        formData.append('address', form.address);
-        formData.append('password', form.password);
-        if (form.profile) {
-            formData.append('profile', form.profile);
-        }
         try {
             const res = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
-                body: formData,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
             });
             const data = await res.json();
             if (!res.ok) {
@@ -56,8 +34,7 @@ const Register: React.FC = () => {
             if (data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user)); // Save user with _id
             }
-            setForm({ name: '', email: '', phone: '', address: '', password: '', profile: null });
-            setPreview(null);
+            setForm({ name: '', email: '', phone: '', address: '', password: '' });
             navigate('/login');
         } catch (err) {
             setError('Server error. Please try again later.');
@@ -121,18 +98,6 @@ const Register: React.FC = () => {
                         required
                         className="w-full border rounded px-3 py-2"
                     />
-                </div>
-                <div>
-                    <label className="block mb-1 font-medium">Profile Picture</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="w-full"
-                    />
-                    {preview && (
-                        <img src={preview} alt="Profile Preview" className="mt-2 w-24 h-24 object-cover rounded-full mx-auto" />
-                    )}
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <button

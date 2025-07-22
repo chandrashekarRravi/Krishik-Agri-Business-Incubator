@@ -4,9 +4,39 @@ import multer from 'multer';
 import xlsx from 'xlsx';
 import mammoth from 'mammoth';
 import jwt from 'jsonwebtoken';
-
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import dotenv from 'dotenv';
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
+// Cloudinary config
+
+
+dotenv.config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+ 
+
+const productStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'krishik-products',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    public_id: (req, file) => `${Date.now()}-${file.originalname}`,
+  },
+});
+const productUpload = multer({
+  storage: productStorage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  },
+});
 
 // Admin auth middleware
 function adminAuth(req, res, next) {
@@ -23,18 +53,48 @@ function adminAuth(req, res, next) {
   }
 }
 
-// Get all products
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of products
+ */
+// Get all products (with pagination)
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json(products);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const [products, total] = await Promise.all([
+      Product.find().skip(skip).limit(limit),
+      Product.countDocuments()
+    ]);
+    res.json({
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (err) {
     console.error('Products fetch error:', err);
-    // Return empty array if database is not connected
-    res.json([]);
+    res.json({ products: [], total: 0, page: 1, totalPages: 1 });
   }
 });
 
+/**
+ * @swagger
+ * /api/products/categories:
+ *   get:
+ *     summary: Get all unique product categories
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
 // Get all unique categories
 router.get('/categories', async (req, res) => {
   try {
@@ -47,6 +107,16 @@ router.get('/categories', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/startups:
+ *   get:
+ *     summary: Get all unique startups
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of startups
+ */
 // Get all unique startups
 router.get('/startups', async (req, res) => {
   try {
@@ -59,6 +129,16 @@ router.get('/startups', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/schema-format:
+ *   get:
+ *     summary: Get product schema format for bulk upload
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Schema format
+ */
 // Get product schema format (public - no auth required)
 router.get('/schema-format', (req, res) => {
   const schemaFormat = {
@@ -125,6 +205,24 @@ router.get('/schema-format', (req, res) => {
   res.json(schemaFormat);
 });
 
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Product details
+ *       404:
+ *         description: Product not found
+ */
 // Get one product (must be after specific routes)
 router.get('/:id', async (req, res) => {
   try {
@@ -135,16 +233,57 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
-// Create product (admin only, with image upload)
-router.post('/', adminAuth, upload.single('image'), async (req, res) => {
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Create a new product (admin only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               startup:
+ *                 type: string
+ *               quantity:
+ *                 type: string
+ *               price:
+ *                 type: string
+ *               contact:
+ *                 type: string
+ *               image:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       201:
+ *         description: Product created
+ *       400:
+ *         description: Invalid data
+ *       401:
+ *         description: Unauthorized
+ */
+// Create product (admin only, with multiple image upload)
+router.post('/', adminAuth, productUpload.array('image', 5), async (req, res) => {
+  console.log('Received POST /api/products', req.body, req.files); // Log request data
   try {
-    // Validate image min size (e.g., 10KB)
-    if (req.file && req.file.size < 10 * 1024) {
-      return res.status(400).json({ message: 'Image too small (min 10KB)' });
-    }
     const productData = req.body;
-    if (req.file) {
-      productData.image = `/uploads/${req.file.filename}`;
+    if (req.files && req.files.length > 0) {
+      productData.image = req.files.map(f => f.path);
+    } else if (req.body.image) {
+      productData.image = Array.isArray(req.body.image) ? req.body.image : [req.body.image];
     }
     if (productData.contact) {
       try { productData.contact = JSON.parse(productData.contact); } catch {}
@@ -153,14 +292,85 @@ router.post('/', adminAuth, upload.single('image'), async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (err) {
-    res.status(400).json({ message: 'Invalid data', error: err.message });
+    // Enhanced error logging for debugging
+    console.error('Product upload error:', err);
+    if (err && typeof err === 'object') {
+      Object.getOwnPropertyNames(err).forEach(key => {
+        console.error(`err[${key}]:`, err[key]);
+      });
+    }
+    try {
+      console.error('Stringified error:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+    } catch (e) {
+      console.error('Error stringifying error:', e);
+    }
+    res.status(500).json({ message: 'Server error', error: err.message || err });
   }
 });
 
-// Update product (admin only)
-router.put('/:id', adminAuth, async (req, res) => {
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Update a product (admin only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               startup:
+ *                 type: string
+ *               quantity:
+ *                 type: string
+ *               price:
+ *                 type: string
+ *               contact:
+ *                 type: string
+ *               image:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       200:
+ *         description: Product updated
+ *       400:
+ *         description: Invalid data
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ */
+// Update product (admin only, with multiple image upload)
+router.put('/:id', adminAuth, productUpload.array('image', 5), async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = req.body;
+    if (req.files && req.files.length > 0) {
+      updateData.image = req.files.map(f => f.path);
+    } else if (req.body.image) {
+      updateData.image = Array.isArray(req.body.image) ? req.body.image : [req.body.image];
+    }
+    if (updateData.contact) {
+      try { updateData.contact = JSON.parse(updateData.contact); } catch {}
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) {
@@ -168,6 +378,28 @@ router.put('/:id', adminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Delete a product (admin only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Product deleted
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ */
 // Delete product (admin only)
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
@@ -179,6 +411,35 @@ router.delete('/:id', adminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/{productId}/reviews:
+ *   post:
+ *     summary: Add a review to a product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               rating:
+ *                 type: number
+ *               comment:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Review added
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Product not found
+ */
 // Add a review to a product
 router.post('/:productId/reviews', async (req, res) => {
   try {
@@ -194,6 +455,24 @@ router.post('/:productId/reviews', async (req, res) => {
     res.status(500).json({ message: 'Failed to add review', error: err.message });
   }
 });
+/**
+ * @swagger
+ * /api/products/{productId}/reviews:
+ *   get:
+ *     summary: Get reviews for a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: List of reviews
+ *       404:
+ *         description: Product not found
+ */
 // Get reviews for a product
 router.get('/:productId/reviews', async (req, res) => {
   try {
@@ -206,8 +485,34 @@ router.get('/:productId/reviews', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/bulk-upload:
+ *   post:
+ *     summary: Bulk upload products (admin only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Products uploaded successfully
+ *       400:
+ *         description: Invalid file or data
+ *       401:
+ *         description: Unauthorized
+ */
 // Bulk upload products (admin only) - supports Excel and DOC files
-router.post('/bulk-upload', adminAuth, upload.single('file'), async (req, res) => {
+router.post('/bulk-upload', adminAuth, productUpload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
     

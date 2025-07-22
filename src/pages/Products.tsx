@@ -50,7 +50,7 @@ export default function Products() {
       const response = await fetch('/api/products');
       if (response.ok) {
         const data = await response.json();
-        setProducts(data);
+        setProducts(data.products); // Use the array, not the whole object
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);
