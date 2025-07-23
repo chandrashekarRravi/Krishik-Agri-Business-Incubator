@@ -28,7 +28,6 @@ productSchema.index({ category: 1 });
 productSchema.index({ startup: 1 });
 productSchema.index({ createdAt: -1 });
 
-// Unique compound index for strict duplicate prevention
-productSchema.index({ name: 1, startup: 1, category: 1, 'contact.email': 1, 'contact.phone': 1 }, { unique: true });
+// Duplicate prevention index removed as per requirements. Now, duplicate products are allowed.
 
 export default mongoose.model('Product', productSchema); 

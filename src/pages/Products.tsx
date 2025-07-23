@@ -39,18 +39,24 @@ export default function Products() {
   const [categories, setCategories] = useState<string[]>([]);
   const [startups, setStartups] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(page, pageSize);
     fetchCategoriesAndStartups();
-  }, []);
+  }, [page, pageSize]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (pageNum = 1, limit = pageSize) => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch(`/api/products?page=${pageNum}&limit=${limit}`);
       if (response.ok) {
         const data = await response.json();
-        setProducts(data.products); // Use the array, not the whole object
+        setProducts(data.products);
+        setTotalPages(data.totalPages || 1);
+        setPage(data.page || 1);
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -166,6 +172,16 @@ export default function Products() {
           </div>
         </div>
 
+        {/* Page Size Selection */}
+        <div className="flex justify-end mb-4">
+          <label className="mr-2 font-medium">Products per page:</label>
+          <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }} className="border rounded px-2 py-1">
+            {[10, 20, 50, 100].map(size => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Products Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
@@ -192,6 +208,19 @@ export default function Products() {
               );
             })
           )}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex flex-col items-center mt-8 gap-2">
+          <div className="flex gap-2">
+            <Button disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+              <Button key={num} variant={num === page ? 'default' : 'outline'} onClick={() => setPage(num)}>{num}</Button>
+            ))}
+            <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+          <span className="px-4 py-2">Page {page} of {totalPages}</span>
         </div>
 
         {/* No Results */}

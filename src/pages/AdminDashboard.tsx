@@ -127,6 +127,10 @@ export default function AdminDashboard() {
     const [startupPage, setStartupPage] = useState(1);
     const startupsPerPage = 5;
 
+    const [productPage, setProductPage] = useState(1);
+    const [productTotalPages, setProductTotalPages] = useState(1);
+    const [productPageSize, setProductPageSize] = useState(20);
+
     // Sorting function
     const sortedStartupsList = [...filteredStartupsList].sort((a, b) => {
         let valA, valB;
@@ -172,10 +176,10 @@ export default function AdminDashboard() {
             window.location.href = '/';
             return;
         }
-        fetchData();
+        fetchData(productPage, productPageSize);
         fetchCategoriesAndStartups();
         fetchSchemaFormat();
-    }, []);
+    }, [productPage, productPageSize]);
 
     const fetchSchemaFormat = async () => {
         try {
@@ -213,21 +217,24 @@ export default function AdminDashboard() {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
-    const fetchData = async () => {
+    const fetchData = async (pageNum = productPage, limit = productPageSize) => {
         setLoading(true);
         setError('');
         try {
-            const [prods, usrs, ords] = await Promise.all([
-                fetch('/api/products', { headers: getAuthHeaders() }),
+            const prods = await fetch(`/api/products?page=${pageNum}&limit=${limit}`, { headers: getAuthHeaders() });
+            const productsData = prods.ok ? await prods.json() : { products: [] };
+            setProducts(Array.isArray(productsData.products) ? productsData.products : []);
+            setProductTotalPages(productsData.totalPages || 1);
+            setProductPage(productsData.page || 1);
+
+            const [usrs, ords] = await Promise.all([
                 fetch('/api/auth', { headers: getAuthHeaders() }),
                 fetch('/api/orders?userId=all', { headers: getAuthHeaders() })
             ]);
 
-            const productsData = prods.ok ? await prods.json() : { products: [] };
             const usersData = usrs.ok ? await usrs.json() : [];
             const ordersData = ords.ok ? await ords.json() : { orders: [] };
 
-            setProducts(Array.isArray(productsData.products) ? productsData.products : []);
             setUsers(Array.isArray(usersData) ? usersData : []);
             setOrders(Array.isArray(ordersData.orders) ? ordersData.orders : []);
         } catch (err) {
@@ -2303,6 +2310,29 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             )}
+
+            {/* Page Size Selection */}
+            <div className="flex justify-end mb-4">
+                <label className="mr-2 font-medium">Products per page:</label>
+                <select value={productPageSize} onChange={e => { setProductPageSize(Number(e.target.value)); setProductPage(1); }} className="border rounded px-2 py-1">
+                    {[10, 20, 50, 100].map(size => (
+                        <option key={size} value={size}>{size}</option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex flex-col items-center mt-4 gap-2">
+                <div className="flex gap-2">
+                    <Button disabled={productPage === 1} onClick={() => setProductPage(productPage - 1)}>Previous</Button>
+                    {/* Page Numbers */}
+                    {Array.from({ length: productTotalPages }, (_, i) => i + 1).map(num => (
+                        <Button key={num} variant={num === productPage ? 'default' : 'outline'} onClick={() => setProductPage(num)}>{num}</Button>
+                    ))}
+                    <Button disabled={productPage === productTotalPages} onClick={() => setProductPage(productPage + 1)}>Next</Button>
+                </div>
+                <span className="px-4 py-2">Page {productPage} of {productTotalPages}</span>
+            </div>
         </div>
     );
 } 
