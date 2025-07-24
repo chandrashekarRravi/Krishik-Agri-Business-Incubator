@@ -87,6 +87,6 @@ console.log('3. Select the sample_products.xlsx file');
 console.log('4. The products will be imported automatically');
 console.log('\n📊 Sample data includes:');
 console.log('- 5 different products');
-console.log('- Various categories: Fertilizers, Irrigation, Seeds, Testing Equipment, Equipment');
+console.log('- Various focus areas: Fertilizers, Irrigation, Seeds, Testing Equipment, Equipment');
 console.log('- Different startups and contact information');
 console.log('- Realistic pricing and quantities'); 

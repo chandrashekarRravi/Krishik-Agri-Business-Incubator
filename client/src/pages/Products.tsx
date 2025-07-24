@@ -164,7 +164,7 @@ export default function Products() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 bg-agri-green rounded-full"></div>
-                  <h4 className="font-semibold text-agri-green">Filter by Category</h4>
+                  <h4 className="font-semibold text-agri-green">Filter by Focus Areas</h4>
                 </div>
                 <div className="flex flex-wrap gap-3 w-full">
                   {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => (
@@ -181,7 +181,7 @@ export default function Products() {
                         : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
                         } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
                     >
-                      {category === "All" ? "All Categories" : category.split(" ").slice(0, 2).join(" ")}
+                      {category === "All" ? "All Focus Areas" : category.split(" ").slice(0, 2).join(" ")}
                     </Button>
                   ))}
                   {categories.length > 6 && (

@@ -423,6 +423,15 @@ export default function AdminDashboard() {
 
     const handleAddProduct = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Require new focus area if 'None / Add New' is selected
+        if (newProduct.category === 'none' && !newProduct.newCategory.trim()) {
+            toast({
+                title: 'Error',
+                description: 'Please enter a new focus area.',
+                variant: 'destructive',
+            });
+            return;
+        }
         // Gather product data for duplicate check
         const productName = newProduct.name.trim().toLowerCase();
         const productStartup = (newProduct.newStartup ? newProduct.newStartup : (newProduct.startup === 'All' ? '' : newProduct.startup)).trim().toLowerCase();
@@ -885,14 +894,14 @@ export default function AdminDashboard() {
                                     {/* Category Filter */}
                                     <div>
                                         <Label htmlFor="category-filter" className="text-sm font-medium">
-                                            Category
+                                            Focus Area
                                         </Label>
                                         <Select value={filterCategory} onValueChange={setFilterCategory}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="All Categories" />
+                                                <SelectValue placeholder="All Focus Areas" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="all">All Categories</SelectItem>
+                                                <SelectItem value="all">All Focus Areas</SelectItem>
                                                 {categories.map(category => (
                                                     <SelectItem key={category} value={category}>
                                                         {category}
@@ -960,7 +969,7 @@ export default function AdminDashboard() {
                                         <thead>
                                             <tr className="border-b">
                                                 <th className="text-left p-3">Name</th>
-                                                <th className="text-left p-3">Category</th>
+                                                <th className="text-left p-3">Focus Area</th>
                                                 <th className="text-left p-3">Startup</th>
                                                 <th className="text-left p-3">Price</th>
                                                 <th className="text-left p-3">Actions</th>
@@ -1790,15 +1799,16 @@ export default function AdminDashboard() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <Label htmlFor="category">Category</Label>
+                                    <Label htmlFor="category">Focus Area</Label>
                                     <Select
                                         value={newProduct.category}
-                                        onValueChange={value => setNewProduct({ ...newProduct, category: value, newCategory: '' })}
+                                        onValueChange={value => setNewProduct({ ...newProduct, category: value, newCategory: value === 'none' ? newProduct.newCategory : '' })}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
+                                            <SelectValue placeholder="Select focus area" />
                                         </SelectTrigger>
                                         <SelectContent>
+                                            <SelectItem value="none">None / Add New</SelectItem>
                                             {categories.map(c => (
                                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                                             ))}
@@ -1806,10 +1816,10 @@ export default function AdminDashboard() {
                                     </Select>
                                 </div>
                                 <div>
-                                    <Label htmlFor="newCategory">New Category</Label>
+                                    <Label htmlFor="newCategory">New Focus Area</Label>
                                     <Input
                                         id="newCategory"
-                                        placeholder="Add new category"
+                                        placeholder="Add new focus area"
                                         value={newProduct.newCategory}
                                         onChange={e => setNewProduct({ ...newProduct, newCategory: e.target.value })}
                                     />
@@ -1983,6 +1993,14 @@ export default function AdminDashboard() {
                         <h2 className="text-lg sm:text-xl font-bold mb-6">Edit Product</h2>
                         <form onSubmit={async (e) => {
                             e.preventDefault();
+                            if (editProduct.category === 'none' && !editProduct.newCategory?.trim()) {
+                                toast({
+                                    title: 'Error',
+                                    description: 'Please enter a new focus area.',
+                                    variant: 'destructive',
+                                });
+                                return;
+                            }
                             const formData = new FormData();
                             formData.append('name', editProduct.name);
                             formData.append('description', editProduct.description);
@@ -2037,15 +2055,16 @@ export default function AdminDashboard() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <Label htmlFor="edit-category">Category</Label>
+                                    <Label htmlFor="edit-category">Focus Area</Label>
                                     <Select
                                         value={editProduct.category}
-                                        onValueChange={value => setEditProduct({ ...editProduct, category: value })}
+                                        onValueChange={value => setEditProduct({ ...editProduct, category: value, newCategory: value === 'none' ? editProduct.newCategory : '' })}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
+                                            <SelectValue placeholder="Select focus area" />
                                         </SelectTrigger>
                                         <SelectContent>
+                                            <SelectItem value="none">None / Add New</SelectItem>
                                             {categories.map(c => (
                                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                                             ))}
@@ -2053,10 +2072,10 @@ export default function AdminDashboard() {
                                     </Select>
                                 </div>
                                 <div>
-                                    <Label htmlFor="edit-newCategory">New Category</Label>
+                                    <Label htmlFor="edit-newCategory">New Focus Area</Label>
                                     <Input
                                         id="edit-newCategory"
-                                        placeholder="Add new category"
+                                        placeholder="Add new focus area"
                                         value={editProduct.newCategory}
                                         onChange={e => setEditProduct({ ...editProduct, newCategory: e.target.value })}
                                     />

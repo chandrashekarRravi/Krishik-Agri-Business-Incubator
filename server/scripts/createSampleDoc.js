@@ -112,7 +112,7 @@ ${dataRows.join('\n')}
 📖 FIELD DESCRIPTIONS:
 - name: Product name (required) - this field is mandatory
 - description: Detailed product description
-- category: Product category (e.g., Fertilizers, Seeds, Equipment)
+- category: Product focus area (e.g., Fertilizers, Seeds, Equipment)
 - startup: Name of the startup company offering the product
 - quantity: Available quantity (can be number or text)
 - price: Product price (can be number or text)

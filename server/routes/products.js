@@ -100,13 +100,13 @@ router.get('/', async (req, res) => {
  * @swagger
  * /api/products/categories:
  *   get:
- *     summary: Get all unique product categories
+ *     summary: Get all unique product focus areas
  *     tags: [Products]
  *     responses:
  *       200:
- *         description: List of categories
+ *         description: List of focus areas
  */
-// Get all unique categories
+// Get all unique focus areas
 router.get('/categories', async (req, res) => {
   try {
     const categories = await Product.distinct('category');
@@ -203,7 +203,7 @@ router.get('/schema-format', (req, res) => {
     fieldDescriptions: {
       name: 'Product name - this field is mandatory',
       description: 'Detailed product description',
-      category: 'Product category (e.g., Fertilizers, Seeds, Equipment)',
+      category: 'Product focus area (e.g., Fertilizers, Seeds, Equipment)',
       startup: 'Name of the startup company offering the product',
       quantity: 'Available quantity (can be number or text)',
       price: 'Product price (can be number or text)',
