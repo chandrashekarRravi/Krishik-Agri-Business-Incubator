@@ -108,7 +108,7 @@ export default function Products() {
 
         {/* Professional Filter Section */}
         <div className="mb-12">
-          <div className="bg-gradient-to-br from-agri-green-light/10 via-white to-agri-yellow-light/10 rounded-3xl p-8 shadow-elegant border border-agri-green/10">
+          <div className="bg-gradient-to-br from-agri-green-light/10 via-white to-agri-yellow-light/10 rounded-3xl p-4 sm:p-8 shadow-elegant border border-agri-green/10">
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-agri-green mb-2">Smart Product Filters</h3>
               <p className="text-muted-foreground">Discover products tailored to your interests</p>
@@ -121,20 +121,17 @@ export default function Products() {
                   <div className="w-3 h-3 bg-agri-green rounded-full"></div>
                   <h4 className="font-semibold text-agri-green">Filter by Category</h4>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 w-full">
                   {categories.map((category) => (
                     <Button
                       key={category}
                       variant={selectedCategory === category ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedCategory(category)}
-                      className={`
-                        ${selectedCategory === category
-                          ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
-                          : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
-                        }
-                        px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs
-                      `}
+                      className={`w-full sm:w-auto ${selectedCategory === category
+                        ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
+                        : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
+                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
                     >
                       {category === "All" ? "All Categories" : category.split(" ").slice(0, 2).join(" ")}
                     </Button>
@@ -148,20 +145,17 @@ export default function Products() {
                   <div className="w-3 h-3 bg-agri-yellow rounded-full"></div>
                   <h4 className="font-semibold text-agri-earth-dark">Filter by Startup</h4>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 w-full">
                   {startups.map((startup) => (
                     <Button
                       key={startup}
                       variant={selectedStartup === startup ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedStartup(startup)}
-                      className={`
-                        ${selectedStartup === startup
-                          ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
-                          : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"
-                        }
-                        px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs
-                      `}
+                      className={`w-full sm:w-auto ${selectedStartup === startup
+                        ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
+                        : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"
+                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
                     >
                       {startup === "All" ? "All Startups" : startup.split(" ")[0]}
                     </Button>
@@ -183,31 +177,33 @@ export default function Products() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            <div className="col-span-full text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading products...</p>
-            </div>
-          ) : (
-            filteredProducts.map((product) => {
-              // Convert ApiProduct to Product format
-              const productForCard: Product = {
-                id: product._id, // Use MongoDB _id as id
-                name: product.name,
-                description: product.description,
-                category: product.category,
-                startup: product.startup,
-                quantity: product.quantity,
-                price: product.price,
-                contact: product.contact,
-                image: product.image
-              };
-              return (
-                <ProductCard key={product._id} product={productForCard} onMoreInfo={setSelectedProduct} />
-              );
-            })
-          )}
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              <div className="col-span-full text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading products...</p>
+              </div>
+            ) : (
+              filteredProducts.map((product) => {
+                // Convert ApiProduct to Product format
+                const productForCard: Product = {
+                  id: product._id, // Use MongoDB _id as id
+                  name: product.name,
+                  description: product.description,
+                  category: product.category,
+                  startup: product.startup,
+                  quantity: product.quantity,
+                  price: product.price,
+                  contact: product.contact,
+                  image: product.image
+                };
+                return (
+                  <ProductCard key={product._id} product={productForCard} onMoreInfo={setSelectedProduct} />
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* Pagination Controls */}
@@ -255,8 +251,8 @@ export default function Products() {
 
       {/* Product Detail Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <Card className="max-w-full sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">

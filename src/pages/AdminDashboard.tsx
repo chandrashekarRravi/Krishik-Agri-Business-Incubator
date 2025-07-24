@@ -2312,27 +2312,31 @@ export default function AdminDashboard() {
             )}
 
             {/* Page Size Selection */}
-            <div className="flex justify-end mb-4">
-                <label className="mr-2 font-medium">Products per page:</label>
-                <select value={productPageSize} onChange={e => { setProductPageSize(Number(e.target.value)); setProductPage(1); }} className="border rounded px-2 py-1">
-                    {[10, 20, 50, 100].map(size => (
-                        <option key={size} value={size}>{size}</option>
-                    ))}
-                </select>
-            </div>
+            {tab === 'products' && (
+                <div className="flex justify-end mb-4">
+                    <label className="mr-2 font-medium">Products per page:</label>
+                    <select value={productPageSize} onChange={e => { setProductPageSize(Number(e.target.value)); setProductPage(1); }} className="border rounded px-2 py-1">
+                        {[10, 20, 50, 100].map(size => (
+                            <option key={size} value={size}>{size}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
 
             {/* Pagination Controls */}
-            <div className="flex flex-col items-center mt-4 gap-2">
-                <div className="flex gap-2">
-                    <Button disabled={productPage === 1} onClick={() => setProductPage(productPage - 1)}>Previous</Button>
-                    {/* Page Numbers */}
-                    {Array.from({ length: productTotalPages }, (_, i) => i + 1).map(num => (
-                        <Button key={num} variant={num === productPage ? 'default' : 'outline'} onClick={() => setProductPage(num)}>{num}</Button>
-                    ))}
-                    <Button disabled={productPage === productTotalPages} onClick={() => setProductPage(productPage + 1)}>Next</Button>
+            {tab === 'products' && (
+                <div className="flex flex-col items-center mt-4 gap-2">
+                    <div className="flex gap-2">
+                        <Button disabled={productPage === 1} onClick={() => setProductPage(productPage - 1)}>Previous</Button>
+                        {/* Page Numbers */}
+                        {Array.from({ length: productTotalPages }, (_, i) => i + 1).map(num => (
+                            <Button key={num} variant={num === productPage ? 'default' : 'outline'} onClick={() => setProductPage(num)}>{num}</Button>
+                        ))}
+                        <Button disabled={productPage === productTotalPages} onClick={() => setProductPage(productPage + 1)}>Next</Button>
+                    </div>
+                    <span className="px-4 py-2">Page {productPage} of {productTotalPages}</span>
                 </div>
-                <span className="px-4 py-2">Page {productPage} of {productTotalPages}</span>
-            </div>
+            )}
         </div>
     );
 } 
