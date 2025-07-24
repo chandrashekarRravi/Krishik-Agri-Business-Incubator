@@ -32,7 +32,7 @@ const Profile: React.FC = () => {
     useEffect(() => {
         if (!user || !user._id) return;
         const token = localStorage.getItem('token');
-        fetch(`${API}/api/orders?userId=${user._id}`, {
+        fetch(`${API}/orders?userId=${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -54,7 +54,7 @@ const Profile: React.FC = () => {
     useEffect(() => {
         if (!user || !user._id) return;
         const token = localStorage.getItem('token');
-        fetch(`${API}/api/auth/${user._id}`, {
+        fetch(`${API}/auth/${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -137,7 +137,7 @@ const Profile: React.FC = () => {
     };
 
     const handleViewSummary = async (orderId: string) => {
-        const res = await fetch(`${API}/api/orders/${orderId}`);
+        const res = await fetch(`${API}/orders/${orderId}`);
         if (res.ok) {
             const data = await res.json();
             setSummaryOrder(data);
@@ -155,7 +155,7 @@ const Profile: React.FC = () => {
     const handleAddAddress = async () => {
         if (!user?._id || !addressForm.address) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API}/api/auth/address`, {
+        const res = await fetch(`${API}/auth/address`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ userId: user._id, ...addressForm })
@@ -175,7 +175,7 @@ const Profile: React.FC = () => {
     const handleSaveEditAddress = async () => {
         if (!user?._id || editAddressIndex === null) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API}/api/auth/address/${user._id}/${editAddressIndex}`, {
+        const res = await fetch(`${API}/auth/address/${user._id}/${editAddressIndex}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify(addressForm)
@@ -191,7 +191,7 @@ const Profile: React.FC = () => {
     const handleDeleteAddress = async (idx: number) => {
         if (!user?._id) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API}/api/auth/address/${user._id}/${idx}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API}/auth/address/${user._id}/${idx}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);
@@ -200,7 +200,7 @@ const Profile: React.FC = () => {
     const handleSetDefaultAddress = async (idx: number) => {
         if (!user?._id) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API}/api/auth/address/${user._id}/default/${idx}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API}/auth/address/${user._id}/default/${idx}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);
