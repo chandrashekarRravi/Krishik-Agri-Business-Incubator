@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigation } from "@/components/Navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail } from "lucide-react";
 import type { Product } from "@/types";
+import { useLocation } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -44,14 +45,39 @@ export default function Products() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [searchTerm, setSearchTerm] = useState("");
   // Add state for expanded filters
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllStartups, setShowAllStartups] = useState(false);
+
+  const location = useLocation();
+  const hasSetStartupFromURL = useRef(false);
+
+  useEffect(() => {
+    if (hasSetStartupFromURL.current) return;
+    const params = new URLSearchParams(location.search);
+    const startupParam = params.get("startup");
+    if (startupParam && startups.includes(startupParam)) {
+      setSelectedStartup(startupParam);
+      hasSetStartupFromURL.current = true;
+    }
+  }, [location.search, startups]);
 
   useEffect(() => {
     fetchProducts(page, pageSize);
     fetchCategoriesAndStartups();
   }, [page, pageSize]);
+
+  useEffect(() => {
+    // If a filter is applied, show more products per page
+    if ((selectedStartup && selectedStartup !== "All") || (selectedCategory && selectedCategory !== "All") || searchTerm) {
+      setPageSize(100);
+    } else {
+      setPageSize(20);
+    }
+    // Always reset to page 1 when filters change
+    setPage(1);
+  }, [selectedStartup, selectedCategory, searchTerm]);
 
   const fetchProducts = async (pageNum = 1, limit = pageSize) => {
     setLoading(true);
@@ -92,7 +118,11 @@ export default function Products() {
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === "All" || product.category === selectedCategory;
     const startupMatch = selectedStartup === "All" || product.startup === selectedStartup;
-    return categoryMatch && startupMatch;
+    const searchMatch =
+      !searchTerm ||
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return categoryMatch && startupMatch && searchMatch;
   });
 
   return (
@@ -112,6 +142,15 @@ export default function Products() {
         </div>
 
         {/* Professional Filter Section */}
+        <div className="mb-8 flex justify-center">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Search products..."
+            className="border rounded px-4 py-2 w-full max-w-md"
+          />
+        </div>
         <div className="mb-12">
           <div className="bg-gradient-to-br from-agri-green-light/10 via-white to-agri-yellow-light/10 rounded-3xl p-4 sm:p-8 shadow-elegant border border-agri-green/10">
             <div className="text-center mb-8">
@@ -132,7 +171,10 @@ export default function Products() {
                       key={category}
                       variant={selectedCategory === category ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        if (category === "All") setPage(1);
+                      }}
                       className={`w-full sm:w-auto ${selectedCategory === category
                         ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
                         : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
@@ -166,7 +208,10 @@ export default function Products() {
                       key={startup}
                       variant={selectedStartup === startup ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setSelectedStartup(startup)}
+                      onClick={() => {
+                        setSelectedStartup(startup);
+                        if (startup === "All") setPage(1);
+                      }}
                       className={`w-full sm:w-auto ${selectedStartup === startup
                         ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
                         : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"

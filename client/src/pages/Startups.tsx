@@ -191,7 +191,7 @@ export default function Startups() {
                     className="bg-agri-green hover:bg-agri-green/90 flex-1"
                     asChild
                   >
-                    <a href="/products">
+                    <a href={`/products?startup=${encodeURIComponent(selectedStartup.name)}`}>
                       View All Products
                     </a>
                   </Button>
