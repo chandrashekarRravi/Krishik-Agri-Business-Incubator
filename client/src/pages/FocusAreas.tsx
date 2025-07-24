@@ -22,7 +22,7 @@ export default function FocusAreas() {
         {/* Focus Areas Image */}
         <div className="mb-12 text-center">
           <img
-            src="./public/uploads/4a3634bb-fd35-4b15-826a-e6fbc8d1a1ab.png"
+            src="/uploads/4a3634bb-fd35-4b15-826a-e6fbc8d1a1ab.png"
             alt="Focus Areas Diagram"
             className="mx-auto max-w-full h-auto rounded-lg shadow-elevated"
           />
