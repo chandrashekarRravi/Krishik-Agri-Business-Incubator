@@ -15,6 +15,7 @@ export default function Startups() {
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [selectedStartup, setSelectedStartup] = useState<Startup | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchStartups = async () => {
@@ -95,10 +96,21 @@ export default function Startups() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {filteredStartups.map((startup) => (
+            {(showAll ? filteredStartups : filteredStartups.slice(0, 5)).map((startup) => (
               <StartupCard key={(startup as any)._id ?? (startup as any).id} startup={startup} onMoreInfo={setSelectedStartup} />
             ))}
           </div>
+        )}
+
+        {filteredStartups.length > 5 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAll((prev) => !prev)}
+            className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs mt-4"
+          >
+            {showAll ? "View Less" : "View More"}
+          </Button>
         )}
 
         {/* Call to Action */}

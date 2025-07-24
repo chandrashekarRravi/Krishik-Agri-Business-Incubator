@@ -248,7 +248,7 @@ export default function AdminDashboard() {
 
     const deleteProduct = async (id: string) => {
         try {
-            const response = await fetch(`${API}/api/products/${id}`, {
+            const response = await fetch(`${API}/products/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
 
     const deleteUser = async (id: string) => {
         try {
-            const response = await fetch(`${API}/api/auth/${id}`, {
+            const response = await fetch(`${API}/auth/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -1993,7 +1993,7 @@ export default function AdminDashboard() {
                             formData.append('contact', JSON.stringify(editProduct.contact));
                             if (editProduct.image instanceof File) formData.append('image', editProduct.image);
                             try {
-                                const response = await fetch(`${API}/api/products/${editProduct._id}`, {
+                                const response = await fetch(`${API}/products/${editProduct._id}`, {
                                     method: 'PUT',
                                     headers: getAuthHeaders(),
                                     body: formData

@@ -44,6 +44,9 @@ export default function Products() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  // Add state for expanded filters
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllStartups, setShowAllStartups] = useState(false);
 
   useEffect(() => {
     fetchProducts(page, pageSize);
@@ -124,7 +127,7 @@ export default function Products() {
                   <h4 className="font-semibold text-agri-green">Filter by Category</h4>
                 </div>
                 <div className="flex flex-wrap gap-3 w-full">
-                  {categories.map((category) => (
+                  {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => (
                     <Button
                       key={category}
                       variant={selectedCategory === category ? "default" : "outline"}
@@ -138,6 +141,16 @@ export default function Products() {
                       {category === "All" ? "All Categories" : category.split(" ").slice(0, 2).join(" ")}
                     </Button>
                   ))}
+                  {categories.length > 6 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAllCategories((prev) => !prev)}
+                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
+                    >
+                      {showAllCategories ? "View Less" : "View More"}
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -148,7 +161,7 @@ export default function Products() {
                   <h4 className="font-semibold text-agri-earth-dark">Filter by Startup</h4>
                 </div>
                 <div className="flex flex-wrap gap-3 w-full">
-                  {startups.map((startup) => (
+                  {(showAllStartups ? startups : startups.slice(0, 6)).map((startup) => (
                     <Button
                       key={startup}
                       variant={selectedStartup === startup ? "default" : "outline"}
@@ -162,6 +175,16 @@ export default function Products() {
                       {startup === "All" ? "All Startups" : startup.split(" ")[0]}
                     </Button>
                   ))}
+                  {startups.length > 6 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAllStartups((prev) => !prev)}
+                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
+                    >
+                      {showAllStartups ? "View Less" : "View More"}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
