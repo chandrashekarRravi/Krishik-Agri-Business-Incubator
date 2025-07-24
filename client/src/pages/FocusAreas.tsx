@@ -3,6 +3,7 @@ import { FocusAreaCard } from "@/components/FocusAreaCard";
 import { focusAreas } from "@/data/focusAreas";
 import type { FocusArea } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 export default function FocusAreas() {
   return (
@@ -43,18 +44,18 @@ export default function FocusAreas() {
             in these focus areas. Connect with startups and discover cutting-edge solutions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/startups"
+            <Link
+              to="/startups"
               className="bg-agri-green text-white px-6 py-3 rounded-lg font-medium hover:bg-agri-green/90 transition-colors"
             >
               Explore Startups
-            </a>
-            <a
-              href="/products"
+            </Link>
+            <Link
+              to="/products"
               className="bg-agri-yellow text-agri-earth-dark px-6 py-3 rounded-lg font-medium hover:bg-agri-yellow/90 transition-colors"
             >
               Browse Products
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactForm } from "@/components/ContactForm";
 import { MapPin, Phone, Mail, Youtube, Facebook, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Contact() {
   return (
@@ -111,34 +112,34 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <a
-                    href="/startups"
+                  <Link
+                    to="/startups"
                     className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors text-center"
                   >
                     <div className="font-medium text-agri-green">Startups</div>
                     <div className="text-xs text-muted-foreground">Explore our startups</div>
-                  </a>
-                  <a
-                    href="/products"
+                  </Link>
+                  <Link
+                    to="/products"
                     className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors text-center"
                   >
                     <div className="font-medium text-agri-green">Products</div>
                     <div className="text-xs text-muted-foreground">Browse products</div>
-                  </a>
-                  <a
-                    href="/focus-areas"
+                  </Link>
+                  <Link
+                    to="/focus-areas"
                     className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors text-center"
                   >
                     <div className="font-medium text-agri-green">Focus Areas</div>
                     <div className="text-xs text-muted-foreground">Innovation domains</div>
-                  </a>
-                  <a
-                    href="/about"
+                  </Link>
+                  <Link
+                    to="/about"
                     className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors text-center"
                   >
                     <div className="font-medium text-agri-green">About Us</div>
                     <div className="text-xs text-muted-foreground">Learn more</div>
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
