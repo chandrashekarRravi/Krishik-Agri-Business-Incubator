@@ -63,15 +63,26 @@ function adminAuth(req, res, next) {
  *       200:
  *         description: List of products
  */
-// Get all products (with pagination)
+// Get all products (with pagination and filtering)
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
+
+    // Build query object
+    const query = {};
+    if (req.query.startup) {
+      // Log the value being searched
+      console.log('Searching for startup:', req.query.startup);
+      // Case-insensitive, partial match
+      query.startup = { $regex: req.query.startup, $options: 'i' };
+    }
+    // Add more filters as needed (e.g., category, name, etc.)
+
     const [products, total] = await Promise.all([
-      Product.find().skip(skip).limit(limit),
-      Product.countDocuments()
+      Product.find(query).skip(skip).limit(limit),
+      Product.countDocuments(query)
     ]);
     res.json({
       products,

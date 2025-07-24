@@ -129,7 +129,7 @@ const Index = () => {
 
             <div className="mb-12">
               <img
-                src="/uploads/FocusAreas.png"
+                src="/uploads/focusAreas.png"
                 alt="Focus Areas"
                 className="mx-auto max-w-full h-auto rounded-lg shadow-elevated"
               />
