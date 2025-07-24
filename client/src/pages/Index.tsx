@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, Package, Leaf, Phone, Mail } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
+import { Link } from "react-router-dom";
 const API = import.meta.env.VITE_API_URL;
 const Index = () => {
   const featuredStartups = [
@@ -77,20 +78,20 @@ const Index = () => {
                   className="bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   asChild
                 >
-                  <a href={`${API}/startups`} className="flex items-center justify-center">
+                  <Link to="/startups" className="flex items-center justify-center">
                     <Users className="mr-2 h-5 w-5" />
                     View Startups
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   size="lg"
                   className="bg-white text-agri-green hover:bg-agri-yellow hover:text-agri-earth-dark font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl border-2 border-agri-yellow transition-all duration-300"
                   asChild
                 >
-                  <a href="/products" className="flex items-center justify-center">
+                  <Link to="/products" className="flex items-center justify-center">
                     <Package className="mr-2 h-5 w-5" />
                     Explore Agri Products
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -141,10 +142,10 @@ const Index = () => {
                 className="bg-agri-green hover:bg-agri-green/90"
                 asChild
               >
-                <a href="/focus-areas">
+                <Link to="/focus-areas">
                   Explore All Focus Areas
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
@@ -190,10 +191,10 @@ const Index = () => {
                 className="border-agri-green text-agri-green hover:bg-agri-green hover:text-white"
                 asChild
               >
-                <a href="/startups">
+                <Link to="/startups">
                   View All Startups
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
@@ -253,11 +254,11 @@ const Index = () => {
               <div>
                 <h3 className="text-xl font-bold mb-4">Quick Links</h3>
                 <ul className="space-y-2">
-                  <li><a href="/about" className="text-gray-300 hover:text-agri-yellow transition-colors">About Us</a></li>
-                  <li><a href="/startups" className="text-gray-300 hover:text-agri-yellow transition-colors">Startups</a></li>
-                  <li><a href="/products" className="text-gray-300 hover:text-agri-yellow transition-colors">Products</a></li>
-                  <li><a href="/focus-areas" className="text-gray-300 hover:text-agri-yellow transition-colors">Focus Areas</a></li>
-                  <li><a href="/contact" className="text-gray-300 hover:text-agri-yellow transition-colors">Contact</a></li>
+                  <li><Link to="/about" className="text-gray-300 hover:text-agri-yellow transition-colors">About Us</Link></li>
+                  <li><Link to="/startups" className="text-gray-300 hover:text-agri-yellow transition-colors">Startups</Link></li>
+                  <li><Link to="/products" className="text-gray-300 hover:text-agri-yellow transition-colors">Products</Link></li>
+                  <li><Link to="/focus-areas" className="text-gray-300 hover:text-agri-yellow transition-colors">Focus Areas</Link></li>
+                  <li><Link to="/contact" className="text-gray-300 hover:text-agri-yellow transition-colors">Contact</Link></li>
                 </ul>
               </div>
 

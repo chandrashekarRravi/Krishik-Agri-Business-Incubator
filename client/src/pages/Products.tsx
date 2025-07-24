@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, Mail } from "lucide-react";
 import type { Product } from "@/types";
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -312,9 +313,9 @@ export default function Products() {
             className="bg-white text-agri-green hover:bg-gray-100"
             asChild
           >
-            <a href="/contact">
+            <Link to="/contact">
               Get in Touch
-            </a>
+            </Link>
           </Button>
         </div>
       </div>

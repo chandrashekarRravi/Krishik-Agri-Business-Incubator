@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, ExternalLink } from "lucide-react";
 import type { Startup } from "@/types";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -127,9 +128,9 @@ export default function Startups() {
             className="bg-white text-agri-green hover:bg-gray-100"
             asChild
           >
-            <a href="/contact">
+            <Link to="/contact">
               Get Started Today
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
@@ -191,9 +192,9 @@ export default function Startups() {
                     className="bg-agri-green hover:bg-agri-green/90 flex-1"
                     asChild
                   >
-                    <a href={`/products?startup=${encodeURIComponent(selectedStartup.name)}`}>
+                    <Link to={`/products?startup=${encodeURIComponent(selectedStartup.name)}`}>
                       View All Products
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="outline"

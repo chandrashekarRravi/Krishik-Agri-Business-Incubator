@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -75,11 +75,11 @@ const App = () => (
                     <div>
                       <h3 className="text-xl font-bold mb-4">Quick Links</h3>
                       <ul className="space-y-2">
-                        <li><a href="/about" className="text-gray-300 hover:text-agri-yellow transition-colors">About Us</a></li>
-                        <li><a href="/startups" className="text-gray-300 hover:text-agri-yellow transition-colors">Startups</a></li>
-                        <li><a href="/products" className="text-gray-300 hover:text-agri-yellow transition-colors">Products</a></li>
-                        <li><a href="/focus-areas" className="text-gray-300 hover:text-agri-yellow transition-colors">Focus Areas</a></li>
-                        <li><a href="/contact" className="text-gray-300 hover:text-agri-yellow transition-colors">Contact</a></li>
+                        <li><Link to="/about" className="text-gray-300 hover:text-agri-yellow transition-colors">About Us</Link></li>
+                        <li><Link to="/startups" className="text-gray-300 hover:text-agri-yellow transition-colors">Startups</Link></li>
+                        <li><Link to="/products" className="text-gray-300 hover:text-agri-yellow transition-colors">Products</Link></li>
+                        <li><Link to="/focus-areas" className="text-gray-300 hover:text-agri-yellow transition-colors">Focus Areas</Link></li>
+                        <li><Link to="/contact" className="text-gray-300 hover:text-agri-yellow transition-colors">Contact</Link></li>
                       </ul>
                     </div>
                     <div>
