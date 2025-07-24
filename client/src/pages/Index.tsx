@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, Package, Leaf, Phone, Mail } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
-
+const API = import.meta.env.VITE_API_URL;
 const Index = () => {
   const featuredStartups = [
     {
@@ -77,7 +77,7 @@ const Index = () => {
                   className="bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   asChild
                 >
-                  <a href="/startups" className="flex items-center justify-center">
+                  <a href={`${API}/startups`} className="flex items-center justify-center">
                     <Users className="mr-2 h-5 w-5" />
                     View Startups
                   </a>
