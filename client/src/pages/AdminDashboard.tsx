@@ -44,6 +44,8 @@ interface Order {
     createdAt?: string;
 }
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function AdminDashboard() {
     const [tab, setTab] = useState<'products' | 'users' | 'orders' | 'startups'>('products');
     const [products, setProducts] = useState<Product[]>([]);
@@ -153,7 +155,7 @@ export default function AdminDashboard() {
     // Featured toggle
     const handleToggleFeatured = async (startup: any) => {
         try {
-            const res = await fetch(`/api/startups/${startup._id}`, {
+            const res = await fetch(`${API}/api/startups/${startup._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 body: JSON.stringify({ ...startup, featured: !startup.featured })
@@ -183,7 +185,7 @@ export default function AdminDashboard() {
 
     const fetchSchemaFormat = async () => {
         try {
-            const response = await fetch('/api/products/schema-format', { headers: getAuthHeaders() });
+            const response = await fetch(`${API}/api/products/schema-format`, { headers: getAuthHeaders() });
             if (response.ok) {
                 const format = await response.json();
                 setSchemaFormat(format);
@@ -196,8 +198,8 @@ export default function AdminDashboard() {
     const fetchCategoriesAndStartups = async () => {
         try {
             const [categoriesRes, startupsRes] = await Promise.all([
-                fetch('/api/products/categories'),
-                fetch('/api/products/startups')
+                fetch(`${API}/api/products/categories`),
+                fetch(`${API}/api/products/startups`)
             ]);
             if (categoriesRes.ok) {
                 const cats = await categoriesRes.json();
@@ -221,15 +223,15 @@ export default function AdminDashboard() {
         setLoading(true);
         setError('');
         try {
-            const prods = await fetch(`/api/products?page=${pageNum}&limit=${limit}`, { headers: getAuthHeaders() });
+            const prods = await fetch(`${API}/api/products?page=${pageNum}&limit=${limit}`, { headers: getAuthHeaders() });
             const productsData = prods.ok ? await prods.json() : { products: [] };
             setProducts(Array.isArray(productsData.products) ? productsData.products : []);
             setProductTotalPages(productsData.totalPages || 1);
             setProductPage(productsData.page || 1);
 
             const [usrs, ords] = await Promise.all([
-                fetch('/api/auth', { headers: getAuthHeaders() }),
-                fetch('/api/orders?userId=all', { headers: getAuthHeaders() })
+                fetch(`${API}/api/auth`, { headers: getAuthHeaders() }),
+                fetch(`${API}/api/orders?userId=all`, { headers: getAuthHeaders() })
             ]);
 
             const usersData = usrs.ok ? await usrs.json() : [];
@@ -246,7 +248,7 @@ export default function AdminDashboard() {
 
     const deleteProduct = async (id: string) => {
         try {
-            const response = await fetch(`/api/products/${id}`, {
+            const response = await fetch(`${API}/api/products/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -274,7 +276,7 @@ export default function AdminDashboard() {
 
     const deleteUser = async (id: string) => {
         try {
-            const response = await fetch(`/api/auth/${id}`, {
+            const response = await fetch(`${API}/api/auth/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -302,7 +304,7 @@ export default function AdminDashboard() {
 
     const deleteOrder = async (id: string) => {
         try {
-            const response = await fetch(`/api/orders/${id}`, {
+            const response = await fetch(`${API}/api/orders/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -330,7 +332,7 @@ export default function AdminDashboard() {
 
     const updateOrderStatus = async (id: string, status: string) => {
         try {
-            const response = await fetch(`/api/orders/${id}/status`, {
+            const response = await fetch(`${API}/api/orders/${id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 body: JSON.stringify({ status })
@@ -383,7 +385,7 @@ export default function AdminDashboard() {
         formData.append('file', file);
 
         try {
-            const response = await fetch('/api/products/bulk-upload', {
+            const response = await fetch(`${API}/api/products/bulk-upload`, {
                 method: 'POST',
                 body: formData,
                 headers: getAuthHeaders()
@@ -448,7 +450,7 @@ export default function AdminDashboard() {
         formData.append('contact', JSON.stringify(newProduct.contact));
         if (newProduct.image) formData.append('image', newProduct.image);
         try {
-            const response = await fetch('/api/products', {
+            const response = await fetch(`${API}/api/products`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: formData
@@ -628,7 +630,7 @@ export default function AdminDashboard() {
     const fetchStartups = async () => {
         setStartupLoading(true);
         try {
-            const res = await fetch('/api/startups', { headers: getAuthHeaders() });
+            const res = await fetch(`${API}/api/startups`, { headers: getAuthHeaders() });
             if (res.ok) {
                 const data = await res.json();
                 setStartupsList(data);
@@ -663,7 +665,7 @@ export default function AdminDashboard() {
             return;
         }
         try {
-            const res = await fetch('/api/startups', {
+            const res = await fetch(`${API}/api/startups`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 body: JSON.stringify(body)
@@ -689,7 +691,7 @@ export default function AdminDashboard() {
         const formData = new FormData(form);
         const body = Object.fromEntries(formData.entries());
         try {
-            const res = await fetch(`/api/startups/${editStartup._id}`, {
+            const res = await fetch(`${API}/api/startups/${editStartup._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
                 body: JSON.stringify(body)
@@ -711,7 +713,7 @@ export default function AdminDashboard() {
     // 7. Delete Startup
     const handleDeleteStartup = async (id: string) => {
         try {
-            const res = await fetch(`/api/startups/${id}`, {
+            const res = await fetch(`${API}/api/startups/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -736,7 +738,7 @@ export default function AdminDashboard() {
     const fetchNotifications = async () => {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('/api/orders/admin/notifications', {
+        const res = await fetch(`${API}/api/orders/admin/notifications`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -1991,7 +1993,7 @@ export default function AdminDashboard() {
                             formData.append('contact', JSON.stringify(editProduct.contact));
                             if (editProduct.image instanceof File) formData.append('image', editProduct.image);
                             try {
-                                const response = await fetch(`/api/products/${editProduct._id}`, {
+                                const response = await fetch(`${API}/api/products/${editProduct._id}`, {
                                     method: 'PUT',
                                     headers: getAuthHeaders(),
                                     body: formData

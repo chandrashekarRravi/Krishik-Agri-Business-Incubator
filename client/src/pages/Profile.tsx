@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Edit2, Save, X } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 
+const API = import.meta.env.VITE_API_URL;
+
 const Profile: React.FC = () => {
     const navigate = useNavigate();
     const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
@@ -13,7 +15,7 @@ const Profile: React.FC = () => {
         phone: user?.phone || '',
         address: user?.address || '',
         profile: null as File | null,
-        profilePreview: user?.profile ? `http://localhost:5000/uploads/${user.profile}` : '',
+        profilePreview: user?.profile ? `${API.replace('/api', '')}/uploads/${user.profile}` : '',
     });
     const [orders, setOrders] = useState<any[]>([]);
     const [emailChanged, setEmailChanged] = useState(false);
@@ -30,7 +32,7 @@ const Profile: React.FC = () => {
     useEffect(() => {
         if (!user || !user._id) return;
         const token = localStorage.getItem('token');
-        fetch(`http://localhost:5000/api/orders?userId=${user._id}`, {
+        fetch(`${API}/api/orders?userId=${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -52,7 +54,7 @@ const Profile: React.FC = () => {
     useEffect(() => {
         if (!user || !user._id) return;
         const token = localStorage.getItem('token');
-        fetch(`http://localhost:5000/api/auth/${user._id}`, {
+        fetch(`${API}/api/auth/${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -94,7 +96,7 @@ const Profile: React.FC = () => {
             phone: user.phone,
             address: user.address,
             profile: null,
-            profilePreview: user.profile ? `http://localhost:5000/uploads/${user.profile}` : '',
+            profilePreview: user.profile ? `${API.replace('/api', '')}/uploads/${user.profile}` : '',
         });
         setEmailChanged(false);
         setMessage('');
@@ -113,7 +115,7 @@ const Profile: React.FC = () => {
             reader.onloadend = () => setForm((prev) => ({ ...prev, profilePreview: reader.result as string }));
             reader.readAsDataURL(file);
         } else {
-            setForm((prev) => ({ ...prev, profilePreview: user.profile ? `http://localhost:5000/uploads/${user.profile}` : '' }));
+            setForm((prev) => ({ ...prev, profilePreview: user.profile ? `${API.replace('/api', '')}/uploads/${user.profile}` : '' }));
         }
     };
 
@@ -135,7 +137,7 @@ const Profile: React.FC = () => {
     };
 
     const handleViewSummary = async (orderId: string) => {
-        const res = await fetch(`http://localhost:5000/api/orders/${orderId}`);
+        const res = await fetch(`${API}/api/orders/${orderId}`);
         if (res.ok) {
             const data = await res.json();
             setSummaryOrder(data);
@@ -153,7 +155,7 @@ const Profile: React.FC = () => {
     const handleAddAddress = async () => {
         if (!user?._id || !addressForm.address) return;
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/auth/address', {
+        const res = await fetch(`${API}/api/auth/address`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ userId: user._id, ...addressForm })
@@ -173,7 +175,7 @@ const Profile: React.FC = () => {
     const handleSaveEditAddress = async () => {
         if (!user?._id || editAddressIndex === null) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/${editAddressIndex}`, {
+        const res = await fetch(`${API}/api/auth/address/${user._id}/${editAddressIndex}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify(addressForm)
@@ -189,7 +191,7 @@ const Profile: React.FC = () => {
     const handleDeleteAddress = async (idx: number) => {
         if (!user?._id) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/${idx}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API}/api/auth/address/${user._id}/${idx}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);
@@ -198,7 +200,7 @@ const Profile: React.FC = () => {
     const handleSetDefaultAddress = async (idx: number) => {
         if (!user?._id) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:5000/api/auth/address/${user._id}/default/${idx}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API}/api/auth/address/${user._id}/default/${idx}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
             const data = await res.json();
             setAddresses(data);

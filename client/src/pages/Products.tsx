@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Phone, Mail } from "lucide-react";
 import type { Product } from "@/types";
 
+const API = import.meta.env.VITE_API_URL;
+
 interface ApiProduct {
   _id: string;
   name: string;
@@ -51,7 +53,7 @@ export default function Products() {
   const fetchProducts = async (pageNum = 1, limit = pageSize) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/products?page=${pageNum}&limit=${limit}`);
+      const response = await fetch(`${API}/products?page=${pageNum}&limit=${limit}`);
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products);
@@ -68,8 +70,8 @@ export default function Products() {
   const fetchCategoriesAndStartups = async () => {
     try {
       const [categoriesRes, startupsRes] = await Promise.all([
-        fetch('/api/products/categories'),
-        fetch('/api/products/startups')
+        fetch(`${API}/products/categories`),
+        fetch(`${API}/products/startups`)
       ]);
       if (categoriesRes.ok) {
         const cats = await categoriesRes.json();
@@ -339,7 +341,7 @@ export default function Products() {
                     className="bg-agri-green hover:bg-agri-green/90 flex-1"
                     asChild
                   >
-                    <a href={`tel:${selectedProduct.contact.phone}`}>
+                    <a href={`tel:${selectedProduct.contact.phone} `}>
                       <Phone className="w-4 h-4 mr-2" />
                       Call Now
                     </a>
@@ -349,7 +351,7 @@ export default function Products() {
                     className="flex-1"
                     asChild
                   >
-                    <a href={`mailto:${selectedProduct.contact.email}`}>
+                    <a href={`mailto:${selectedProduct.contact.email} `}>
                       <Mail className="w-4 h-4 mr-2" />
                       Email
                     </a>
@@ -364,21 +366,22 @@ export default function Products() {
                       rel="noopener noreferrer"
                     >
                       Buy Now
-                    </a>
-                  </Button>
+                    </a >
+                  </Button >
                   <Button
                     variant="outline"
                     onClick={() => setSelectedProduct(null)}
                   >
                     Close
                   </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+                </div >
+              </div >
+            </CardContent >
+          </Card >
+        </div >
+      )
+      }
+    </div >
   );
 }
 
@@ -391,7 +394,7 @@ function ProductReviews({ productId, user }: { productId: string, user: any }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   useEffect(() => {
-    fetch(`http://localhost:5000/api/products/${productId}/reviews`)
+    fetch(`${API}/products/${productId}/reviews`)
       .then(res => res.ok ? res.json() : [])
       .then(data => { setReviews(data); setLoading(false); });
   }, [productId]);
@@ -400,7 +403,7 @@ function ProductReviews({ productId, user }: { productId: string, user: any }) {
     setSubmitting(true);
     setError('');
     setSuccess('');
-    const res = await fetch(`http://localhost:5000/api/products/${productId}/reviews`, {
+    const res = await fetch(`${API}/products/${productId}/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user._id, name: user.name, rating, comment })

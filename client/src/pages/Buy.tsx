@@ -28,7 +28,8 @@ export default function Buy() {
     }
     setLoading(true);
     setError("");
-    fetch(`/api/products/${productId}`)
+    const API = import.meta.env.VITE_API_URL;
+    fetch(`${API}/products/${productId}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Product not found");
         const data = await res.json();

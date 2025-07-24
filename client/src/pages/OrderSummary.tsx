@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function OrderSummary() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ export default function OrderSummary() {
   useEffect(() => {
     if (order && order.email && order.product && order.product.name) {
       const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
-      fetch('http://localhost:5000/api/orders', {
+      fetch(`${API}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

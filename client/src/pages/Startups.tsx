@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Phone, Mail, ExternalLink } from "lucide-react";
 import type { Startup } from "@/types";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Startups() {
   const [startups, setStartups] = useState<Startup[]>([]);
   const [focusAreaFilters, setFocusAreaFilters] = useState<string[]>(["All"]);
@@ -18,7 +20,7 @@ export default function Startups() {
     const fetchStartups = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/startups");
+        const res = await fetch(`${API}/startups`);
         if (res.ok) {
           const data = await res.json();
           // Ensure data is an array of Startup
