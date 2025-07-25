@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "optimize-images": "node ./scripts/optimize-images.mjs",
+    "lint:accessibility": "eslint --ext .tsx,.ts src --plugin jsx-a11y",
+    "lhci:autorun": "lhci autorun --collect.url=http://localhost:4173"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -86,9 +89,14 @@
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.9.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "imagemin": "^9.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
+    "imagemin-svgo": "^11.0.1",
     "jest": "^30.0.5",
     "postcss": "^8.4.47",
     "supertest": "^7.1.3",

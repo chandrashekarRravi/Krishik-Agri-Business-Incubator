@@ -108,6 +108,21 @@ router.post('/', async (req, res) => {
     };
     await transporter.sendMail(mailOptions);
 
+    // Send SMS to customer
+    if (rest.phone && startupDoc) {
+      const customerSmsBody = `Thank you for your order, ${name}!\nOrder#: ${orderNumber}\nProduct: ${productName} (Qty: ${quantity})\nWe will process your order soon.\n\nFor queries, contact the startup:\nStartup: ${startupDoc.name}\nPhone: ${startupDoc.contact.phone}\nEmail: ${startupDoc.contact.email}\n\n- Krishik Team`;
+      try {
+        await twilioClient.messages.create({
+          body: customerSmsBody,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          to: rest.phone.startsWith('+') ? rest.phone : `+91${rest.phone}`
+        });
+        console.log('Customer SMS sent to:', rest.phone);
+      } catch (smsErr) {
+        console.error('Failed to send customer SMS:', smsErr);
+      }
+    }
+
     // --- NEW: Notify Startup with detailed logging ---
     console.log('productId:', productId, 'productName:', productName);
     let productDoc = null;
@@ -152,7 +167,7 @@ router.post('/', async (req, res) => {
       }
       // Send SMS to startup
       if (startupDoc.contact.phone) {
-        const smsBody = `New order for ${productName} (Qty: ${quantity})\nOrder#: ${orderNumber}\nCustomer: ${name}, ${rest.phone || ''}`;
+        const smsBody = `From: Krishik\nTo: ${startupDoc.name}\n\nNew Order Received!\nOrder#: ${orderNumber}\nProduct: ${productName} (Qty: ${quantity})\nCustomer: ${name}\nCustomer Phone: ${rest.phone || ''}\n- Krishik Team\nPlease process promptly.`;
         try {
           await twilioClient.messages.create({
             body: smsBody,

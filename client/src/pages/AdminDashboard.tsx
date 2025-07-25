@@ -253,11 +253,16 @@ export default function AdminDashboard() {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
+                setProducts(prev => prev.filter(p => p._id !== id));
+                // Optionally update categories if a focus area is now unused
+                setCategories(prev => {
+                    const usedCategories = new Set(products.filter(p => p._id !== id).map(p => p.category));
+                    return prev.filter(cat => cat === 'All' || usedCategories.has(cat));
+                });
                 toast({
                     title: "Success",
                     description: "Product deleted successfully",
                 });
-                fetchData();
             } else {
                 toast({
                     title: "Error",
@@ -281,11 +286,11 @@ export default function AdminDashboard() {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
+                setUsers(prev => prev.filter(u => u._id !== id));
                 toast({
                     title: "Success",
                     description: "User deleted successfully",
                 });
-                fetchData();
             } else {
                 toast({
                     title: "Error",
@@ -309,11 +314,11 @@ export default function AdminDashboard() {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
+                setOrders(prev => prev.filter(o => o._id !== id));
                 toast({
                     title: "Success",
                     description: "Order deleted successfully",
                 });
-                fetchData();
             } else {
                 toast({
                     title: "Error",
@@ -435,7 +440,7 @@ export default function AdminDashboard() {
         // Gather product data for duplicate check
         const productName = newProduct.name.trim().toLowerCase();
         const productStartup = (newProduct.newStartup ? newProduct.newStartup : (newProduct.startup === 'All' ? '' : newProduct.startup)).trim().toLowerCase();
-        const productCategory = (newProduct.newCategory ? newProduct.newCategory : (newProduct.category === 'All' ? '' : newProduct.category)).trim().toLowerCase();
+        const productCategory = (newProduct.newCategory ? newProduct.newCategory : (newProduct.category === 'All' || newProduct.category === 'none' ? '' : newProduct.category)).trim().toLowerCase();
         const productEmail = newProduct.contact.email.trim().toLowerCase();
         const productPhone = newProduct.contact.phone.trim();
         const duplicate = products.some(p =>
@@ -452,7 +457,7 @@ export default function AdminDashboard() {
         const formData = new FormData();
         formData.append('name', newProduct.name);
         formData.append('description', newProduct.description);
-        formData.append('category', newProduct.newCategory ? newProduct.newCategory : (newProduct.category === 'All' ? '' : newProduct.category));
+        formData.append('category', newProduct.newCategory ? newProduct.newCategory : (newProduct.category === 'All' || newProduct.category === 'none' ? '' : newProduct.category));
         formData.append('startup', newProduct.newStartup ? newProduct.newStartup : (newProduct.startup === 'All' ? '' : newProduct.startup));
         formData.append('quantity', newProduct.quantity + (newProduct.quantityUnit ? ' ' + newProduct.quantityUnit : ''));
         formData.append('price', newProduct.price + (newProduct.priceUnit ? ' ' + newProduct.priceUnit : ''));
@@ -465,6 +470,11 @@ export default function AdminDashboard() {
                 body: formData
             });
             if (response.ok) {
+                const newProductData = await response.json();
+                setProducts(prev => [...prev, newProductData]);
+                if (newProductData.category && !categories.includes(newProductData.category)) {
+                    setCategories(prev => [...prev, newProductData.category]);
+                }
                 toast({
                     title: "Success",
                     description: "Product added successfully",
@@ -484,8 +494,6 @@ export default function AdminDashboard() {
                     quantityUnit: 'kg',
                     priceUnit: '₹'
                 });
-                fetchData();
-                fetchCategoriesAndStartups();
             } else {
                 let errorMsg = "Failed to add product";
                 try {
@@ -727,8 +735,8 @@ export default function AdminDashboard() {
                 headers: getAuthHeaders()
             });
             if (res.ok) {
+                setStartupsList(prev => prev.filter(s => s._id !== id));
                 toast({ title: 'Success', description: 'Startup deleted successfully' });
-                fetchStartups();
             } else {
                 const err = await res.json();
                 toast({ title: 'Error', description: err.message || 'Failed to delete startup', variant: 'destructive' });
@@ -2004,7 +2012,7 @@ export default function AdminDashboard() {
                             const formData = new FormData();
                             formData.append('name', editProduct.name);
                             formData.append('description', editProduct.description);
-                            formData.append('category', editProduct.category);
+                            formData.append('category', editProduct.newCategory ? editProduct.newCategory : (editProduct.category === 'All' || editProduct.category === 'none' ? '' : editProduct.category));
                             formData.append('startup', editProduct.startup);
                             formData.append('quantity', String(editProduct.quantity) + (editProduct.quantityUnit ? ' ' + editProduct.quantityUnit : ''));
                             formData.append('price', String(editProduct.price) + (editProduct.priceUnit ? ' ' + editProduct.priceUnit : ''));
@@ -2017,11 +2025,14 @@ export default function AdminDashboard() {
                                     body: formData
                                 });
                                 if (response.ok) {
+                                    const updatedProduct = await response.json();
+                                    setProducts(prev => prev.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+                                    if (updatedProduct.category && !categories.includes(updatedProduct.category)) {
+                                        setCategories(prev => [...prev, updatedProduct.category]);
+                                    }
                                     toast({ title: 'Success', description: 'Product updated successfully' });
                                     setShowEditProduct(false);
                                     setEditProduct(null);
-                                    fetchData();
-                                    fetchCategoriesAndStartups();
                                 } else {
                                     let errorMsg = 'Failed to update product';
                                     try {

@@ -7,6 +7,7 @@ import { body, validationResult } from 'express-validator';
 import rateLimit from 'express-rate-limit';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import twilio from 'twilio';
 
 const router = express.Router();
 // Cloudinary config
@@ -33,6 +34,9 @@ const profileUpload = multer({
     cb(null, true);
   },
 });
+
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const phoneVerifications = {};
 
 // Rate limiters
 export const authLimiter = rateLimit({
@@ -390,6 +394,35 @@ router.get('/:userId', userAuth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch user', error: err.message });
   }
+});
+
+// Send phone verification code
+router.post('/send-phone-code', async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ message: 'Phone number is required' });
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
+  phoneVerifications[phone] = code;
+  try {
+    await twilioClient.messages.create({
+      body: `Your Krishik verification code is: ${code}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: phone.startsWith('+') ? phone : `+91${phone}`
+    });
+    res.json({ message: 'Verification code sent' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to send code', error: err.message });
+  }
+});
+
+// Verify phone code
+router.post('/verify-phone-code', (req, res) => {
+  const { phone, code } = req.body;
+  if (!phone || !code) return res.status(400).json({ message: 'Phone and code are required' });
+  if (phoneVerifications[phone] === code) {
+    delete phoneVerifications[phone];
+    return res.json({ success: true });
+  }
+  res.status(400).json({ success: false, message: 'Invalid code' });
 });
 
 // Admin auth middleware
