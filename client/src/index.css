@@ -121,3 +121,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Utility to hide scrollbars while preserving scroll behavior */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
