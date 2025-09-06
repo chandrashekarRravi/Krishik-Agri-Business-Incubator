@@ -11,7 +11,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Leaf, Sprout, Droplets, Tractor, FlaskConical, Wifi, Package, Wheat, Apple, Shield, ThermometerSun, Bug } from "lucide-react";
+import { Phone, Mail, Sprout, Droplets, Tractor, FlaskConical, Wifi, Package } from "lucide-react";
 import type { Product } from "@/types";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -35,23 +35,16 @@ interface ApiProduct {
   reviews: any[];
 }
 
-// Map common category names to lucide-react icons. Unknown categories fall back to Package.
-const categoryIconMap: Record<string, ElementType> = {
-  All: Package,
-  Fertilizer: FlaskConical,
-  Fertilizers: FlaskConical,
-  Seeds: Sprout,
-  Irrigation: Droplets,
-  Machinery: Tractor,
-  Equipment: Tractor,
-  Biotech: FlaskConical,
-  IoT: Wifi,
-  Packaging: Package,
-  Grains: Wheat,
-  Fruits: Apple,
-  Protection: Shield,
-  Weather: ThermometerSun,
-  Pest: Bug,
+// Resolve a category string to a lucide-react icon component
+const getCategoryIcon = (name: string): ElementType => {
+  const normalized = (name || "").toLowerCase();
+  if (normalized === "all") return Package;
+  if (normalized.includes("seed")) return Sprout;
+  if (normalized.includes("irrig")) return Droplets;
+  if (normalized.includes("mach") || normalized.includes("equip")) return Tractor;
+  if (normalized.includes("fertil")) return FlaskConical;
+  if (normalized.includes("iot")) return Wifi;
+  return Package;
 };
 
 export default function Products() {
@@ -187,7 +180,7 @@ export default function Products() {
                 <div className="md:hidden -mx-1 overflow-x-auto scrollbar-hide">
                   <div className="flex gap-3 px-1">
                     {categories.map((category) => {
-                      const Icon = categoryIconMap[category] || Package;
+                      const Icon = getCategoryIcon(category);
                       const isSelected = selectedCategory === category;
                       return (
                         <button
@@ -214,7 +207,7 @@ export default function Products() {
                 {/* Desktop: grid */}
                 <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 w-full">
                   {categories.map((category) => {
-                    const Icon = categoryIconMap[category] || Package;
+                    const Icon = getCategoryIcon(category);
                     const isSelected = selectedCategory === category;
                     return (
                       <button
