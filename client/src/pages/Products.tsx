@@ -5,13 +5,13 @@
 
 
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ElementType } from "react";
 import { Navigation } from "@/components/Navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail } from "lucide-react";
+import { Phone, Mail, Leaf, Sprout, Droplets, Tractor, FlaskConical, Wifi, Package, Wheat, Apple, Shield, ThermometerSun, Bug } from "lucide-react";
 import type { Product } from "@/types";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -35,6 +35,25 @@ interface ApiProduct {
   reviews: any[];
 }
 
+// Map common category names to lucide-react icons. Unknown categories fall back to Package.
+const categoryIconMap: Record<string, ElementType> = {
+  All: Package,
+  Fertilizer: FlaskConical,
+  Fertilizers: FlaskConical,
+  Seeds: Sprout,
+  Irrigation: Droplets,
+  Machinery: Tractor,
+  Equipment: Tractor,
+  Biotech: FlaskConical,
+  IoT: Wifi,
+  Packaging: Package,
+  Grains: Wheat,
+  Fruits: Apple,
+  Protection: Shield,
+  Weather: ThermometerSun,
+  Pest: Bug,
+};
+
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedStartup, setSelectedStartup] = useState("All");
@@ -47,9 +66,7 @@ export default function Products() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
-  // Add state for expanded filters
-  const [showAllCategories, setShowAllCategories] = useState(false);
-  const [showAllStartups, setShowAllStartups] = useState(false);
+  // Flipkart-style filters show all in scrollable rows on mobile; no expand/collapse needed
 
   const location = useLocation();
   const hasSetStartupFromURL = useRef(false);
@@ -166,34 +183,59 @@ export default function Products() {
                   <div className="w-3 h-3 bg-agri-green rounded-full"></div>
                   <h4 className="font-semibold text-agri-green">Filter by Focus Areas</h4>
                 </div>
-                <div className="flex flex-wrap gap-3 w-full">
-                  {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        if (category === "All") setPage(1);
-                      }}
-                      className={`w-full sm:w-auto ${selectedCategory === category
-                        ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
-                        : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
-                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
-                    >
-                      {category === "All" ? "All Focus Areas" : category.split(" ").slice(0, 2).join(" ")}
-                    </Button>
-                  ))}
-                  {categories.length > 6 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAllCategories((prev) => !prev)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
-                    >
-                      {showAllCategories ? "View Less" : "View More"}
-                    </Button>
-                  )}
+                {/* Mobile: horizontal scroll row */}
+                <div className="md:hidden -mx-1 overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-3 px-1">
+                    {categories.map((category) => {
+                      const Icon = categoryIconMap[category] || Package;
+                      const isSelected = selectedCategory === category;
+                      return (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            if (category === "All") setPage(1);
+                          }}
+                          className={`min-w-[110px] rounded-xl border p-4 flex flex-col items-center justify-center text-center transition-all duration-300 ${
+                            isSelected
+                              ? "bg-agri-green/15 border-agri-green text-agri-green shadow-md"
+                              : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-agri-green/40"
+                          }`}
+                        >
+                          <Icon className={`w-6 h-6 mb-2 ${isSelected ? "text-agri-green" : "text-gray-500"}`} />
+                          <span className="text-sm font-medium truncate">
+                            {category === "All" ? "All Focus Areas" : category}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Desktop: grid */}
+                <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 w-full">
+                  {categories.map((category) => {
+                    const Icon = categoryIconMap[category] || Package;
+                    const isSelected = selectedCategory === category;
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          if (category === "All") setPage(1);
+                        }}
+                        className={`rounded-xl border p-4 flex flex-col items-center justify-center text-center transition-all duration-300 ${
+                          isSelected
+                            ? "bg-agri-green/15 border-agri-green text-agri-green shadow-md"
+                            : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-agri-green/40"
+                        }`}
+                      >
+                        <Icon className={`w-6 h-6 mb-2 ${isSelected ? "text-agri-green" : "text-gray-500"}`} />
+                        <span className="text-sm font-medium truncate">
+                          {category === "All" ? "All Focus Areas" : category}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -203,34 +245,57 @@ export default function Products() {
                   <div className="w-3 h-3 bg-agri-yellow rounded-full"></div>
                   <h4 className="font-semibold text-agri-earth-dark">Filter by Startup</h4>
                 </div>
-                <div className="flex flex-wrap gap-3 w-full">
-                  {(showAllStartups ? startups : startups.slice(0, 6)).map((startup) => (
-                    <Button
-                      key={startup}
-                      variant={selectedStartup === startup ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedStartup(startup);
-                        if (startup === "All") setPage(1);
-                      }}
-                      className={`w-full sm:w-auto ${selectedStartup === startup
-                        ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
-                        : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"
-                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
-                    >
-                      {startup === "All" ? "All Startups" : startup.split(" ")[0]}
-                    </Button>
-                  ))}
-                  {startups.length > 6 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAllStartups((prev) => !prev)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
-                    >
-                      {showAllStartups ? "View Less" : "View More"}
-                    </Button>
-                  )}
+                {/* Mobile: horizontal scroll row */}
+                <div className="md:hidden -mx-1 overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-3 px-1">
+                    {startups.map((startup) => {
+                      const isSelected = selectedStartup === startup;
+                      return (
+                        <button
+                          key={startup}
+                          onClick={() => {
+                            setSelectedStartup(startup);
+                            if (startup === "All") setPage(1);
+                          }}
+                          className={`min-w-[130px] rounded-xl border p-4 flex flex-col items-center justify-center text-center transition-all duration-300 ${
+                            isSelected
+                              ? "bg-agri-yellow/20 border-agri-yellow text-agri-earth-dark shadow-md"
+                              : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-agri-yellow/50"
+                          }`}
+                        >
+                          <span className="text-2xl mb-2">🏢</span>
+                          <span className="text-sm font-medium truncate">
+                            {startup === "All" ? "All Startups" : startup}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Desktop: grid */}
+                <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 w-full">
+                  {startups.map((startup) => {
+                    const isSelected = selectedStartup === startup;
+                    return (
+                      <button
+                        key={startup}
+                        onClick={() => {
+                          setSelectedStartup(startup);
+                          if (startup === "All") setPage(1);
+                        }}
+                        className={`rounded-xl border p-4 flex flex-col items-center justify-center text-center transition-all duration-300 ${
+                          isSelected
+                            ? "bg-agri-yellow/20 border-agri-yellow text-agri-earth-dark shadow-md"
+                            : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-agri-yellow/50"
+                        }`}
+                      >
+                        <span className="text-2xl mb-2">🏢</span>
+                        <span className="text-sm font-medium truncate">
+                          {startup === "All" ? "All Startups" : startup}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
