@@ -14,7 +14,7 @@ import { focusAreas } from "@/data/focusAreas";
 {/*
 const API = '/api';*/}
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 interface ApiProduct {
   _id: string;
   name: string;

@@ -45,7 +45,7 @@ interface Order {
     createdAt?: string;
 }
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 
 export default function AdminDashboard() {
     const navigate = useNavigate();

@@ -20,4 +20,12 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    // Set default API URL for production
+    'import.meta.env.VITE_API_URL': JSON.stringify(
+      mode === 'production' 
+        ? 'https://krishik-agri-business-hub-backend.onrender.com/api'
+        : 'http://localhost:5000/api'
+    ),
+  },
 }));

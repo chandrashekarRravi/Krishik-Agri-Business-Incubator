@@ -28,7 +28,7 @@ export default function Buy() {
     }
     setLoading(true);
     setError("");
-    const API = import.meta.env.VITE_API_URL;
+    const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
     fetch(`${API}/products/${productId}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Product not found");

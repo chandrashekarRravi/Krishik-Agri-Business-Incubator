@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, Package, Leaf, Phone, Mail } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { Link } from "react-router-dom";
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 const Index = () => {
   const featuredStartups = [
     {

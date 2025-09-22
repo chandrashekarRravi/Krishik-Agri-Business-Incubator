@@ -8,7 +8,7 @@ import { Phone, Mail, ExternalLink } from "lucide-react";
 import type { Startup } from "@/types";
 import { Link } from "react-router-dom";
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 
 export default function Startups() {
   const [startups, setStartups] = useState<Startup[]>([]);

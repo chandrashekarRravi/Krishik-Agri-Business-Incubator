@@ -109,6 +109,7 @@ const App = () => (
                           referrerPolicy="no-referrer-when-downgrade"
                           title="Krishik Agri Business Incubator Location"
                           className="w-full h-full"
+                          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                         ></iframe>
                       </div>
                     </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog } from '@headlessui/react';
 import { X, Eye, EyeOff, Mail, Phone } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 
 const Login: React.FC = () => {
     const [form, setForm] = useState({ emailOrPhone: '', password: '' });

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Edit2, Save, X, Settings, Package, MapPin, Calendar, Star, TrendingUp } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
 
 const Profile: React.FC = () => {
     const navigate = useNavigate();

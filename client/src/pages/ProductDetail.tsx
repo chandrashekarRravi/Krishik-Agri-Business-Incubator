@@ -59,7 +59,7 @@ export default function ProductDetail() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const API = import.meta.env.VITE_API_URL;
+                const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
                 const response = await fetch(`${API}/products/${id}`);
                 if (response.ok) {
                     const data = await response.json();
@@ -85,7 +85,7 @@ export default function ProductDetail() {
     const fetchSuggestedProducts = async (category: string, currentProductId: string) => {
         setLoadingSuggestions(true);
         try {
-            const API = import.meta.env.VITE_API_URL;
+            const API = import.meta.env.VITE_API_URL || 'https://krishik-agri-business-hub-backend.onrender.com/api';
             const response = await fetch(`${API}/products`);
             if (response.ok) {
                 const data = await response.json();
