@@ -52,7 +52,7 @@
     /* Shadows */
     --shadow-card: 0 4px 20px hsl(var(--agri-green) / 0.1);
     --shadow-elevated: 0 8px 30px hsl(var(--agri-green) / 0.15);
-    
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -120,4 +120,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

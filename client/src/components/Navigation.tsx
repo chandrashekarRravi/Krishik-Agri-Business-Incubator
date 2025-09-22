@@ -4,14 +4,6 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const navigationItems = [
-  { name: "Home", href: "/" },
-  { name: "About Us", href: "/about" },
-  { name: "Focus Areas", href: "/focus-areas" },
-  { name: "Startups", href: "/startups" },
-  { name: "Products", href: "/products" },
-  { name: "Contact", href: "/contact" },
-];
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +12,14 @@ export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
+  const navigationItems = (() => {
+    const items: { name: string; href: string }[] = [
+      { name: "Products", href: "/products" },
+    ];
+    {/* if (user) items.push({ name: "Profile", href: "/profile" });
+    if (user?.isAdmin) items.push({ name: "Admin", href: "/admin" });
+    */} return items;
+  })();
 
   useEffect(() => {
     if (!avatarMenuOpen) return;

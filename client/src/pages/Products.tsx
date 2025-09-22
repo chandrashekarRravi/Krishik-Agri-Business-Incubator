@@ -1,23 +1,20 @@
-
-
-
-
-
-
-
 import { useState, useEffect, useRef } from "react";
 import { Navigation } from "@/components/Navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail } from "lucide-react";
+import { Phone, Mail, ArrowUp } from "lucide-react";
 import type { Product } from "@/types";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+// Import focusAreas and use emoji icons for category filter
+import { focusAreas } from "@/data/focusAreas";
+
+{/*
+const API = '/api';*/}
 
 const API = import.meta.env.VITE_API_URL;
-
 interface ApiProduct {
   _id: string;
   name: string;
@@ -33,6 +30,48 @@ interface ApiProduct {
   };
   image: string;
   reviews: any[];
+  // Focus area information automatically assigned based on category
+  focusAreas?: Array<{
+    id: string;
+    icon: string;
+    title: string;
+  }>;
+  primaryFocusArea?: {
+    id: string;
+    icon: string;
+    title: string;
+  };
+}
+
+// Helper function for normalization
+function normalize(str: string) {
+  return str.toLowerCase().replace(/[^a-z0-9]/gi, '');
+}
+
+// Build emojiCategoryIconMap using normalized keys
+const emojiCategoryIconMap: Record<string, string> = {};
+focusAreas.forEach(area => {
+  emojiCategoryIconMap[normalize(area.title)] = area.icon;
+});
+emojiCategoryIconMap["all"] = "📦"; // fallback for "All" category
+
+// Function to get icon for a category based on products
+function getCategoryIcon(category: string, products: ApiProduct[], categoryIcons: Record<string, string>): string {
+  if (category === "All") return "";
+
+  // First try to get the category-specific icon
+  if (categoryIcons[category]) {
+    return categoryIcons[category];
+  }
+
+  // Find a product with this category and return its primary focus area icon
+  const productWithCategory = products.find(p => p.category === category);
+  if (productWithCategory?.primaryFocusArea?.icon) {
+    return productWithCategory.primaryFocusArea.icon;
+  }
+
+  // Fallback to the old mapping
+  return emojiCategoryIconMap[normalize(category)] || "📦";
 }
 
 export default function Products() {
@@ -50,9 +89,47 @@ export default function Products() {
   // Add state for expanded filters
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllStartups, setShowAllStartups] = useState(false);
+  const [categoryIcons, setCategoryIcons] = useState<Record<string, string>>({});
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const location = useLocation();
   const hasSetStartupFromURL = useRef(false);
+
+  // Check if user is admin
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        setIsAdmin(userData.isAdmin === true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        setIsAdmin(false);
+      }
+    } else {
+      setIsAdmin(false);
+    }
+  }, []);
+
+  // Handle scroll to show/hide scroll to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setShowScrollTop(scrollTop > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     if (hasSetStartupFromURL.current) return;
@@ -67,6 +144,7 @@ export default function Products() {
   useEffect(() => {
     fetchProducts(page, pageSize);
     fetchCategoriesAndStartups();
+    fetchCategoryIcons();
   }, [page, pageSize]);
 
   useEffect(() => {
@@ -100,8 +178,8 @@ export default function Products() {
   const fetchCategoriesAndStartups = async () => {
     try {
       const [categoriesRes, startupsRes] = await Promise.all([
-        fetch(`${API}/products/categories`),
-        fetch(`${API}/products/startups`)
+        fetch(`/api/products/categories`),
+        fetch(`/api/products/startups`)
       ]);
       if (categoriesRes.ok) {
         const cats = await categoriesRes.json();
@@ -116,9 +194,22 @@ export default function Products() {
     }
   };
 
+  const fetchCategoryIcons = async () => {
+    try {
+      const response = await fetch(`/api/products/category-icons`);
+      if (response.ok) {
+        const icons = await response.json();
+        setCategoryIcons(icons);
+      }
+    } catch (error) {
+      console.error('Failed to fetch category icons:', error);
+    }
+  };
+
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === "All" || product.category === selectedCategory;
-    const startupMatch = selectedStartup === "All" || product.startup === selectedStartup;
+    // Only apply startup filter if user is admin
+    const startupMatch = !isAdmin || selectedStartup === "All" || product.startup === selectedStartup;
     const searchMatch =
       !searchTerm ||
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -128,19 +219,45 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header Banner */}
+      <section className="relative w-full bg-[#294B29] py-3 sm:py-4 md:py-6 border-b border-neutral-800">
+        <div className="max-w-5xl mx-auto flex flex-col items-center">
+          <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+            <img src="/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+            <img src="/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+            <img src="/uploads/UAS_Dharwad_original.png" alt="UAS Dharwad Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+            <img src="/uploads/Krishik_original.png" alt="Krishik Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+            <img src="/uploads/ASTRA_original.png" alt="ASTRA Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+          </div>
+          <div className="text-center px-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-agri-yellow mb-1 sm:mb-2 tracking-tight">Krishik Agri Business Incubator</h1>
+            <div className="text-xs sm:text-sm md:text-base lg:text-lg text-white font-medium mb-1">RKVY-Innovation and Agri-Entrepreneurship Programme</div>
+            <div className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-bold mb-1">Center of Excellence</div>
+            <div className="text-xs sm:text-sm text-white mb-1">(Knowledge Partner, RKVY, MoA & FW, GoI)</div>
+            <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-[#D2D0A0] mt-1">University of Agricultural Sciences, Dharwad.</div>
+          </div>
+        </div>
+      </section>
+
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-agri-green mb-6">
-            Agricultural Products
+            E-commerce platform
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Discover innovative agricultural products from our incubated startups,
-            bringing sustainable solutions directly from farm to your table
+          <p className="text-xl text-muted-foreground max-w-5xl mx-auto">
+            Marketplace connecting farmers and consumers with innovative farm inputs, services, and sustainable products.
           </p>
         </div>
+        {/* Focus Areas Image  <div className="mb-12 text-center">
+          <img
+            src="/uploads/focusAreas.png"
+            alt="Focus Areas Diagram"
+            className="mx-auto max-w-full h-auto rounded-lg shadow-elevated"
+          />
+        </div>*/}
 
         {/* Professional Filter Section */}
         <div className="mb-8 flex justify-center">
@@ -154,42 +271,54 @@ export default function Products() {
         </div>
         <div className="mb-12">
           <div className="bg-gradient-to-br from-agri-green-light/10 via-white to-agri-yellow-light/10 rounded-3xl p-4 sm:p-8 shadow-elegant border border-agri-green/10">
-            <div className="text-center mb-8">
+            {/*<div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-agri-green mb-2">Smart Product Filters</h3>
               <p className="text-muted-foreground">Discover products tailored to your interests</p>
-            </div>
+            </div> */}
 
-            <div className="grid md:grid-cols-2 gap-8">
+
+            <div className={`grid gap-8 ${isAdmin ? 'grid-rows-2' : 'grid-rows-1'}`}>
               {/* Category Filter */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 bg-agri-green rounded-full"></div>
-                  <h4 className="font-semibold text-agri-green">Filter by Focus Areas</h4>
+                  <h4 className="font-semibold text-agri-green">Categories</h4>
                 </div>
-                <div className="flex flex-wrap gap-3 w-full">
-                  {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        if (category === "All") setPage(1);
-                      }}
-                      className={`w-full sm:w-auto ${selectedCategory === category
-                        ? "bg-agri-green hover:bg-agri-green/90 text-white shadow-md transform scale-105"
-                        : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-agri-green/10"
-                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
-                    >
-                      {category === "All" ? "All Focus Areas" : category.split(" ").slice(0, 2).join(" ")}
-                    </Button>
-                  ))}
-                  {categories.length > 6 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full">
+                  {(showAllCategories ? categories : categories.slice(0, 6)).map((category) => {
+                    const emoji = getCategoryIcon(category, products, categoryIcons);
+                    const isSelected = selectedCategory === category;
+                    return (
+                      <Button
+                        key={category}
+                        variant={isSelected ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          if (category === "All") setPage(1);
+                        }}
+                        title={category === "All" ? "All Focus Areas" : category}
+                        className={`flex flex-col items-center justify-center w-full h-[80px] sm:h-[90px] px-1 sm:px-2 py-2
+          ${isSelected
+                            ? "bg-gradient-to-br from-agri-green to-green-600 hover:from-agri-green/90 hover:to-green-600/90 text-white shadow-lg transform scale-105"
+                            : "border-2 border-agri-green/30 text-agri-green hover:border-agri-green hover:bg-gradient-to-br hover:from-agri-green/5 hover:to-green-50 hover:shadow-md"
+                          } rounded-lg font-medium transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-xl text-xs backdrop-blur-sm`}
+                      >
+                        <span className="mb-1 text-lg sm:text-2xl transition-transform duration-300 ease-in-out hover:scale-110">{emoji}</span>
+                        <span
+                          className="text-xs font-semibold text-center px-1 overflow-hidden text-ellipsis whitespace-nowrap w-full transition-all duration-300 ease-in-out hover:text-opacity-80"
+                        >
+                          {category === "All" ? "All Focus Areas" : category}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                  {categories.length > 8 && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAllCategories((prev) => !prev)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
+                      className="w-full h-[70px] px-2 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg text-xs col-span-2 sm:col-span-1"
                     >
                       {showAllCategories ? "View Less" : "View More"}
                     </Button>
@@ -197,42 +326,45 @@ export default function Products() {
                 </div>
               </div>
 
-              {/* Startup Filter */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 bg-agri-yellow rounded-full"></div>
-                  <h4 className="font-semibold text-agri-earth-dark">Filter by Startup</h4>
+              {/* Startup Filter - Admin Only */}
+              {isAdmin && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-3 h-3 bg-agri-yellow rounded-full"></div>
+                    <h4 className="font-semibold text-agri-earth-dark">Startup</h4>
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">Admin Only</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full">
+                    {(showAllStartups ? startups : startups.slice(0, 6)).map((startup) => (
+                      <Button
+                        key={startup}
+                        variant={selectedStartup === startup ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          setSelectedStartup(startup);
+                          if (startup === "All") setPage(1);
+                        }}
+                        className={`w-full ${selectedStartup === startup
+                          ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
+                          : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"
+                          } px-2 sm:px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
+                      >
+                        {startup === "All" ? "All Startups" : startup.split(" ")[0]}
+                      </Button>
+                    ))}
+                    {startups.length > 6 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAllStartups((prev) => !prev)}
+                        className="w-full px-2 sm:px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs col-span-2 sm:col-span-1"
+                      >
+                        {showAllStartups ? "View Less" : "View More"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-3 w-full">
-                  {(showAllStartups ? startups : startups.slice(0, 6)).map((startup) => (
-                    <Button
-                      key={startup}
-                      variant={selectedStartup === startup ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedStartup(startup);
-                        if (startup === "All") setPage(1);
-                      }}
-                      className={`w-full sm:w-auto ${selectedStartup === startup
-                        ? "bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 shadow-md transform scale-105"
-                        : "border-2 border-agri-yellow/50 text-agri-earth-dark hover:border-agri-yellow hover:bg-agri-yellow/10"
-                        } px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs`}
-                    >
-                      {startup === "All" ? "All Startups" : startup.split(" ")[0]}
-                    </Button>
-                  ))}
-                  {startups.length > 6 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAllStartups((prev) => !prev)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg text-xs"
-                    >
-                      {showAllStartups ? "View Less" : "View More"}
-                    </Button>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -249,7 +381,7 @@ export default function Products() {
 
         {/* Products Grid */}
         <div className="overflow-x-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
               <div className="col-span-full text-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mx-auto mb-4"></div>
@@ -299,8 +431,7 @@ export default function Products() {
           </div>
         )}
 
-        {/* Call to Action */}
-        <div className="mt-16 text-center bg-gradient-hero text-white rounded-lg p-8">
+        {/* Call to Action  <div className="mt-16 text-center bg-gradient-hero text-white rounded-lg p-8">
           <h2 className="text-2xl font-bold mb-4">
             Interested in Bulk Orders?
           </h2>
@@ -317,7 +448,8 @@ export default function Products() {
               Get in Touch
             </Link>
           </Button>
-        </div>
+        </div>*/}
+
       </div>
 
       {/* Product Detail Modal */}
@@ -450,6 +582,17 @@ export default function Products() {
         </div >
       )
       }
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 bg-agri-green hover:bg-agri-green/90 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      )}
     </div >
   );
 }
@@ -463,16 +606,16 @@ function ProductReviews({ productId, user }: { productId: string, user: any }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   useEffect(() => {
-    fetch(`${API}/products/${productId}/reviews`)
+    fetch(`/api/products/${productId}/reviews`)
       .then(res => res.ok ? res.json() : [])
-      .then(data => { setReviews(data); setLoading(false); });
+      .then(data => { setReviews(data); setLoading(false); }); // <-- FIXED
   }, [productId]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
     setSuccess('');
-    const res = await fetch(`${API}/products/${productId}/reviews`, {
+    const res = await fetch(`/api/products/${productId}/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user._id, name: user.name, rating, comment })

@@ -40,21 +40,21 @@ const Index = () => {
       />
       <div className="min-h-screen bg-background">
         {/* Header Banner */}
-        <section className="relative w-full bg-[#181c23] py-6 border-b border-neutral-800">
+        <section className="relative w-full bg-[#1a1a2e] py-3 sm:py-4 md:py-6 border-b border-neutral-800">
           <div className="max-w-5xl mx-auto flex flex-col items-center">
-            <div className="flex flex-row flex-wrap justify-center gap-4 mb-4">
-              <img src="/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/UAS Dharwad(new circular).png" alt="UAS Dharwad Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/Krishik(new circular).png" alt="Krishik Logo" className="h-16 w-16 object-contain rounded-full" />
-              <img src="/uploads/ASTRA(new circular).png" alt="ASTRA Logo" className="h-16 w-16 object-contain rounded-full" />
+            <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+              <img src="/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+              <img src="/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+              <img src="/uploads/UAS_Dharwad_original.png" alt="UAS Dharwad Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+              <img src="/uploads/Krishik_original.png" alt="Krishik Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+              <img src="/uploads/ASTRA_original.png" alt="ASTRA Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
             </div>
-            <div className="text-center">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-agri-yellow mb-2 tracking-tight">Krishik Agri Business Incubator</h1>
-              <div className="text-base md:text-lg text-white font-medium mb-1">RKVY-Innovation and Agri-Entrepreneurship Programme</div>
-              <div className="text-lg md:text-xl text-white font-bold mb-1">Center of Excellence</div>
-              <div className="text-sm text-white mb-1">(Knowledge Partner, RKVY, MoA & FW, GoI)</div>
-              <div className="text-lg md:text-xl font-bold text-agri-green mt-1">University of Agricultural Sciences, Dharwad.</div>
+            <div className="text-center px-4">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-agri-yellow mb-1 sm:mb-2 tracking-tight">Krishik Agri Business Incubator</h1>
+              <div className="text-xs sm:text-sm md:text-base lg:text-lg text-white font-medium mb-1">RKVY-Innovation and Agri-Entrepreneurship Programme</div>
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-bold mb-1">Center of Excellence</div>
+              <div className="text-xs sm:text-sm text-white mb-1">(Knowledge Partner, RKVY, MoA & FW, GoI)</div>
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-agri-green mt-1">University of Agricultural Sciences, Dharwad.</div>
             </div>
           </div>
         </section>

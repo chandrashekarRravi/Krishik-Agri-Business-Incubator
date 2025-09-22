@@ -11,7 +11,7 @@ interface SEOHeadProps {
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
-    title = "Krishik Agri Business Hub - Empowering Agricultural Innovation",
+    title = "Krishik Agri Business Incubator - Empowering Agricultural Innovation",
     description = "Discover innovative agricultural products and startups from Krishik Agri Business Incubator, University of Agricultural Sciences, Dharwad. Sustainable farming solutions for the future.",
     keywords = "agriculture, farming, innovation, startups, sustainable farming, agricultural technology, Krishik, Dharwad",
     image = "/krishik-banner.jpg",

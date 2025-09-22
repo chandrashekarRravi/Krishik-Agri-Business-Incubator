@@ -9,6 +9,16 @@ export interface Product {
     price: string;
     contact: Contact;
     image: string;
+    // Focus area information automatically assigned based on category
+    focusAreas?: FocusAreaInfo[];
+    primaryFocusArea?: FocusAreaInfo;
+}
+
+// Focus area information for products
+export interface FocusAreaInfo {
+    id: string;
+    icon: string;
+    title: string;
 }
 
 // Startup related types

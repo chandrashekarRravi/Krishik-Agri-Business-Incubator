@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { mapCategoryToFocusAreas, getPrimaryFocusArea } from '../utils/categoryMapping.js';
 
 const reviewSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -22,11 +23,42 @@ const productSchema = new mongoose.Schema({
   },
   image: [String],
   reviews: [reviewSchema],
+  // Focus area information automatically assigned based on category
+  focusAreas: [{
+    id: String,
+    icon: String,
+    title: String
+  }],
+  primaryFocusArea: {
+    id: String,
+    icon: String,
+    title: String
+  }
 }, { timestamps: true });
 
 productSchema.index({ category: 1 });
 productSchema.index({ startup: 1 });
 productSchema.index({ createdAt: -1 });
+productSchema.index({ 'primaryFocusArea.id': 1 });
+
+// Pre-save middleware to automatically assign focus areas based on category
+productSchema.pre('save', function(next) {
+  if (this.category && (!this.focusAreas || this.focusAreas.length === 0)) {
+    this.focusAreas = mapCategoryToFocusAreas(this.category);
+    this.primaryFocusArea = getPrimaryFocusArea(this.category);
+  }
+  next();
+});
+
+// Pre-update middleware for findOneAndUpdate operations
+productSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function(next) {
+  const update = this.getUpdate();
+  if (update.category) {
+    update.focusAreas = mapCategoryToFocusAreas(update.category);
+    update.primaryFocusArea = getPrimaryFocusArea(update.category);
+  }
+  next();
+});
 
 // Duplicate prevention index removed as per requirements. Now, duplicate products are allowed.
 

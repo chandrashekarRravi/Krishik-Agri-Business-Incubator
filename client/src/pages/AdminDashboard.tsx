@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Bell } from 'lucide-react';
+import { Bell, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
     _id: string;
@@ -47,6 +48,7 @@ interface Order {
 const API = import.meta.env.VITE_API_URL;
 
 export default function AdminDashboard() {
+    const navigate = useNavigate();
     const [tab, setTab] = useState<'products' | 'users' | 'orders' | 'startups'>('products');
     const [products, setProducts] = useState<Product[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -782,7 +784,17 @@ export default function AdminDashboard() {
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+                    <div className="flex items-center justify-between mb-2">
+                        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                        <Button
+                            onClick={() => navigate('/products')}
+                            variant="outline"
+                            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Go Back to Main Page
+                        </Button>
+                    </div>
                     <p className="text-gray-600">Manage products, users, and orders</p>
                 </div>
 

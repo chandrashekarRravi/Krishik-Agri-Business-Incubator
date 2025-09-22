@@ -15,7 +15,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onMoreInfo })
     <Card className="shadow-card hover:shadow-elevated transition-all duration-300 hover:scale-105">
         <CardHeader className="pb-3">
             {product.image && (
-                <div className="mb-4 rounded-lg overflow-hidden bg-gray-50 aspect-[4/3] w-full">
+                <div className="mb-4 rounded-lg overflow-hidden bg-gray-50 aspect-[4/3] w-full cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => window.location.href = `/product/${product.id}`}>
                     <LazyImage
                         src={product.image}
                         alt={product.name}
@@ -29,8 +30,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onMoreInfo })
             <div className="flex flex-wrap gap-2">
                 <Badge
                     variant="secondary"
-                    className="bg-agri-yellow-light text-agri-earth-dark text-xs"
+                    className="bg-agri-yellow-light text-agri-earth-dark text-xs flex items-center gap-1"
                 >
+                    {product.primaryFocusArea?.icon && (
+                        <span className="text-xs">{product.primaryFocusArea.icon}</span>
+                    )}
                     {product.category}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
@@ -53,22 +57,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onMoreInfo })
                 </div>
             </div>
             <div className="flex gap-2 mt-4">
-                {onMoreInfo && (
-                    <Button
-                        variant="default"
-                        className="w-1/2 bg-agri-green hover:bg-agri-green/90"
-                        onClick={() => onMoreInfo(product)}
-                    >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        More Info
-                    </Button>
-                )}
                 <Button
-                    className="w-1/2 bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 font-semibold"
+                    className="w-full bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 font-semibold"
                     asChild
                 >
-                    <a href={`/buy?productId=${product.id}`}>
-                        Buy Now
+                    <a href={`/product/${product.id}`}>
+                        View Details
                     </a>
                 </Button>
             </div>

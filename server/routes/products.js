@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import dotenv from 'dotenv';
+import { getAllFocusAreaDetails, categoryIcons } from '../utils/categoryMapping.js';
 const router = express.Router();
 // Cloudinary config
 
@@ -137,6 +138,51 @@ router.get('/startups', async (req, res) => {
     console.error('Startups fetch error:', err);
     // Return empty array if database is not connected
     res.json([]);
+  }
+});
+
+/**
+ * @swagger
+ * /api/products/focus-areas:
+ *   get:
+ *     summary: Get all focus areas with icons
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of focus areas
+ */
+// Get all focus areas
+router.get('/focus-areas', async (req, res) => {
+  try {
+    const focusAreaDetails = getAllFocusAreaDetails();
+    const focusAreas = Object.entries(focusAreaDetails).map(([id, details]) => ({
+      id,
+      ...details
+    }));
+    res.json(focusAreas);
+  } catch (err) {
+    console.error('Focus areas fetch error:', err);
+    res.json([]);
+  }
+});
+
+/**
+ * @swagger
+ * /api/products/category-icons:
+ *   get:
+ *     summary: Get all category icons
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of category icons
+ */
+// Get all category icons
+router.get('/category-icons', async (req, res) => {
+  try {
+    res.json(categoryIcons);
+  } catch (err) {
+    console.error('Category icons fetch error:', err);
+    res.json({});
   }
 });
 

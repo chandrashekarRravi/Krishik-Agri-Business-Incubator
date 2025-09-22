@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   profile: { type: String },
   isAdmin: { type: Boolean, default: false },
+  passwordChangedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema); 
