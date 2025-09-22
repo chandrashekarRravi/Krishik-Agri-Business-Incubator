@@ -35,15 +35,10 @@ const Login: React.FC = () => {
 
         // Auto-detect input type
         if (name === 'emailOrPhone') {
-            const isProductionAPI = API.includes('onrender.com') || API.includes('herokuapp.com');
-
             if (value.includes('@')) {
                 setInputType('email');
-            } else if (!isProductionAPI && /^[\+]?[0-9\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
+            } else if (/^[\+]?[0-9\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
                 setInputType('phone');
-            } else if (isProductionAPI) {
-                // Force email type for production
-                setInputType('email');
             }
         }
     };
@@ -51,12 +46,8 @@ const Login: React.FC = () => {
     const validateInput = (value: string) => {
         const isEmail = value.includes('@');
         const isPhone = /^[\+]?[0-9\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''));
-        const isProductionAPI = API.includes('onrender.com') || API.includes('herokuapp.com');
 
-        if (isProductionAPI && !isEmail && value.length > 0) {
-            setError('Please enter a valid email address');
-            return false;
-        } else if (!isProductionAPI && !isEmail && !isPhone && value.length > 0) {
+        if (!isEmail && !isPhone && value.length > 0) {
             setError('Please enter a valid email address or phone number');
             return false;
         }
@@ -78,23 +69,11 @@ const Login: React.FC = () => {
             // Determine if input is email or phone
             const isEmail = form.emailOrPhone.includes('@');
 
-            // Check if we're using production API (backward compatibility)
-            const isProductionAPI = API.includes('onrender.com') || API.includes('herokuapp.com');
-
-            let requestBody;
-            if (isProductionAPI && isEmail) {
-                // Use old API format for production with email
-                requestBody = {
-                    email: form.emailOrPhone,
-                    password: form.password
-                };
-            } else {
-                // Use new API format for local development or phone numbers
-                requestBody = {
-                    emailOrPhone: form.emailOrPhone,
-                    password: form.password
-                };
-            }
+            // Always use the new API format since backend has been updated
+            const requestBody = {
+                emailOrPhone: form.emailOrPhone,
+                password: form.password
+            };
 
             const res = await fetch(`${API}/auth/login`, {
                 method: 'POST',
@@ -253,10 +232,7 @@ const Login: React.FC = () => {
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                        {API.includes('onrender.com') || API.includes('herokuapp.com')
-                            ? "Login with your email address (phone login coming soon)"
-                            : "You can login with either your email address or phone number"
-                        }
+                        You can login with either your email address or phone number
                     </p>
                 </div>
                 <div>
@@ -321,11 +297,6 @@ const Login: React.FC = () => {
                                 <strong>Password Reset:</strong> Enter your email or phone number to receive a 6-digit verification code.
                                 The code will be sent to both your email and phone number.
                             </p>
-                            {API.includes('onrender.com') || API.includes('herokuapp.com') ? (
-                                <p className="text-sm text-orange-700 mt-2">
-                                    <strong>Note:</strong> This feature is currently in development. For immediate assistance, please contact support.
-                                </p>
-                            ) : null}
                         </div>
 
                         <form onSubmit={handleForgotPassword} className="space-y-4">

@@ -98,19 +98,24 @@ const App = () => (
                         Dharwad, Karnataka 580005<br />
                         India
                       </p>
-                      <div className="w-full h-48 sm:h-56 rounded-lg overflow-hidden border border-gray-600">
-                        <iframe
-                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3840.123456789!2d75.0123456789!3d15.4567890123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bb5c1234567890%3A0xabcdef1234567890!2sUniversity%20of%20Agricultural%20Sciences%2C%20Dharwad!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
-                          width="100%"
-                          height="100%"
-                          style={{ border: 0 }}
-                          allowFullScreen
-                          loading="lazy"
-                          referrerPolicy="no-referrer-when-downgrade"
-                          title="Krishik Agri Business Incubator Location"
-                          className="w-full h-full"
-                          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                        ></iframe>
+                      <div className="w-full h-48 sm:h-56 rounded-lg overflow-hidden border border-gray-600 bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-gray-600 mb-2">
+                            <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">University of Agricultural Sciences</p>
+                          <p className="text-xs text-gray-500">Dharwad, Karnataka 580005</p>
+                          <a
+                            href="https://maps.google.com/?q=University+of+Agricultural+Sciences+Dharwad"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                          >
+                            View on Google Maps
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
