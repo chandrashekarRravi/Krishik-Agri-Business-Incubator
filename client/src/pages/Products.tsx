@@ -178,8 +178,8 @@ export default function Products() {
   const fetchCategoriesAndStartups = async () => {
     try {
       const [categoriesRes, startupsRes] = await Promise.all([
-        fetch(`/api/products/categories`),
-        fetch(`/api/products/startups`)
+        fetch(`${API}/products/categories`),
+        fetch(`${API}/products/startups`)
       ]);
       if (categoriesRes.ok) {
         const cats = await categoriesRes.json();
@@ -196,7 +196,7 @@ export default function Products() {
 
   const fetchCategoryIcons = async () => {
     try {
-      const response = await fetch(`/api/products/category-icons`);
+      const response = await fetch(`${API}/products/category-icons`);
       if (response.ok) {
         const icons = await response.json();
         setCategoryIcons(icons);
@@ -606,7 +606,7 @@ function ProductReviews({ productId, user }: { productId: string, user: any }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   useEffect(() => {
-    fetch(`/api/products/${productId}/reviews`)
+    fetch(`${API}/products/${productId}/reviews`)
       .then(res => res.ok ? res.json() : [])
       .then(data => { setReviews(data); setLoading(false); }); // <-- FIXED
   }, [productId]);
@@ -615,7 +615,7 @@ function ProductReviews({ productId, user }: { productId: string, user: any }) {
     setSubmitting(true);
     setError('');
     setSuccess('');
-    const res = await fetch(`/api/products/${productId}/reviews`, {
+    const res = await fetch(`${API}/products/${productId}/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user._id, name: user.name, rating, comment })
