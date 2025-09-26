@@ -226,7 +226,7 @@ export default function Products() {
             <img src="/uploads/India Emblem(new circular).png" alt="India Emblem" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
             <img src="/uploads/RKVY(new circular).png" alt="RKVY Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
             <img src="/uploads/UAS_Dharwad_original.png" alt="UAS Dharwad Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
-            <img src="/uploads/Krishik_original.png" alt="Krishik Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
+            <img src="/uploads/Krishik_original.jpg" alt="Krishik Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-cover rounded-full border-2 border-white shadow-lg" />
             <img src="/uploads/ASTRA_original.png" alt="ASTRA Logo" className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain rounded-full" />
           </div>
           <div className="text-center px-4">
@@ -297,7 +297,7 @@ export default function Products() {
                           setSelectedCategory(category);
                           if (category === "All") setPage(1);
                         }}
-                        title={category === "All" ? "All Focus Areas" : category}
+                        title={category === "All" ? "All Products" : category}
                         className={`flex flex-col items-center justify-center w-full h-[80px] sm:h-[90px] px-1 sm:px-2 py-2
           ${isSelected
                             ? "bg-gradient-to-br from-agri-green to-green-600 hover:from-agri-green/90 hover:to-green-600/90 text-white shadow-lg transform scale-105"
@@ -308,7 +308,7 @@ export default function Products() {
                         <span
                           className="text-xs font-semibold text-center px-1 overflow-hidden text-ellipsis whitespace-nowrap w-full transition-all duration-300 ease-in-out hover:text-opacity-80"
                         >
-                          {category === "All" ? "All Focus Areas" : category}
+                          {category === "All" ? "All Products" : category}
                         </span>
                       </Button>
                     );

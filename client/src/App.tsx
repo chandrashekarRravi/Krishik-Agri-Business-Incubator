@@ -61,9 +61,9 @@ const App = () => (
                     <div>
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
                         <img
-                          src="/uploads/Krishik_original.png"
+                          src="/uploads/Krishik_original.jpg"
                           alt="Krishik Logo"
-                          className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain flex-shrink-0"
+                          className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-cover rounded-full border-2 border-white shadow-lg flex-shrink-0"
                         />
                         <div className="flex-1">
                           <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight">Krishik Agri Business Incubator</h3>
