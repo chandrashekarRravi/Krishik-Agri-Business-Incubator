@@ -24,6 +24,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Custom middleware to measure API response time
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const diff = process.hrtime(start);
+    const timeInMs = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
+    console.log(`[API TIMER] ${req.method} ${req.originalUrl} took ${timeInMs} ms`);
+  });
+  next();
+});
+
 // Winston logger setup
 const logger = winston.createLogger({
   level: 'info',
