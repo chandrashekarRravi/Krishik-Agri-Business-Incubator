@@ -74,17 +74,23 @@ router.get('/', async (req, res) => {
     // Build query object
     const query = {};
     if (req.query.startup) {
-      // Log the value being searched
       console.log('Searching for startup:', req.query.startup);
-      // Case-insensitive, partial match
       query.startup = { $regex: req.query.startup, $options: 'i' };
     }
-    // Add more filters as needed (e.g., category, name, etc.)
+
+    console.time('Products API Query');
 
     const [products, total] = await Promise.all([
-      Product.find(query).skip(skip).limit(limit),
+      Product.find(query)
+        .select('-reviews -__v -createdAt -updatedAt') // Exclude unnecessary fields
+        .lean() // Return plain JS objects (faster memory execution)
+        .skip(skip)
+        .limit(limit),
       Product.countDocuments(query)
     ]);
+
+    console.timeEnd('Products API Query');
+
     res.json({
       products,
       total,
