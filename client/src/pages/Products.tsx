@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Navigation } from "@/components/Navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -78,18 +79,12 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedStartup, setSelectedStartup] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [products, setProducts] = useState<ApiProduct[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [startups, setStartups] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
   // Add state for expanded filters
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllStartups, setShowAllStartups] = useState(false);
-  const [categoryIcons, setCategoryIcons] = useState<Record<string, string>>({});
   const [isAdmin, setIsAdmin] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -131,6 +126,67 @@ export default function Products() {
     });
   };
 
+
+  // React Query for Products
+  const { data: productsData, isLoading: loading } = useQuery({
+    queryKey: ['products', page, pageSize],
+    queryFn: async () => {
+      const response = await fetch(`${API}/products?page=${page}&limit=${pageSize}`);
+      if (!response.ok) throw new Error('Network error');
+      return response.json();
+    },
+    staleTime: 60000, // Cache for 1 minute
+  });
+
+  const products = productsData?.products || [];
+  const totalPages = productsData?.totalPages || 1;
+
+  // React Query for Categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await fetch(`${API}/products/categories`);
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      return ['All', ...data];
+    },
+    staleTime: Infinity, // Cache indefinitely
+  });
+
+  // React Query for Startups
+  const { data: startups = [] } = useQuery({
+    queryKey: ['startups'],
+    queryFn: async () => {
+      const res = await fetch(`${API}/products/startups`);
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      return ['All', ...data];
+    },
+    staleTime: Infinity, // Cache indefinitely
+  });
+
+  // React Query for Category Icons
+  const { data: categoryIcons = {} } = useQuery({
+    queryKey: ['categoryIcons'],
+    queryFn: async () => {
+      const res = await fetch(`${API}/products/category-icons`);
+      if (!res.ok) throw new Error('Network error');
+      return res.json();
+    },
+    staleTime: Infinity, // Cache indefinitely
+  });
+
+  // Reset page and adjust page size when filters change
+  useEffect(() => {
+    if ((selectedStartup && selectedStartup !== "All") || (selectedCategory && selectedCategory !== "All") || searchTerm) {
+      setPageSize(100);
+    } else {
+      setPageSize(20);
+    }
+    setPage(1);
+  }, [selectedStartup, selectedCategory, searchTerm]);
+
+  // Handle setting startup from URL parameters
   useEffect(() => {
     if (hasSetStartupFromURL.current) return;
     const params = new URLSearchParams(location.search);
@@ -140,74 +196,6 @@ export default function Products() {
       hasSetStartupFromURL.current = true;
     }
   }, [location.search, startups]);
-
-  useEffect(() => {
-    fetchProducts(page, pageSize);
-  }, [page, pageSize]);
-
-  useEffect(() => {
-    fetchCategoriesAndStartups();
-    fetchCategoryIcons();
-  }, []);
-
-  useEffect(() => {
-    // If a filter is applied, show more products per page
-    if ((selectedStartup && selectedStartup !== "All") || (selectedCategory && selectedCategory !== "All") || searchTerm) {
-      setPageSize(100);
-    } else {
-      setPageSize(20);
-    }
-    // Always reset to page 1 when filters change
-    setPage(1);
-  }, [selectedStartup, selectedCategory, searchTerm]);
-
-  const fetchProducts = async (pageNum = 1, limit = pageSize) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API}/products?page=${pageNum}&limit=${limit}`);
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data.products);
-        setTotalPages(data.totalPages || 1);
-        setPage(data.page || 1);
-      }
-    } catch (error) {
-      console.error('Failed to fetch products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCategoriesAndStartups = async () => {
-    try {
-      const [categoriesRes, startupsRes] = await Promise.all([
-        fetch(`${API}/products/categories`),
-        fetch(`${API}/products/startups`)
-      ]);
-      if (categoriesRes.ok) {
-        const cats = await categoriesRes.json();
-        setCategories(['All', ...cats]);
-      }
-      if (startupsRes.ok) {
-        const starts = await startupsRes.json();
-        setStartups(['All', ...starts]);
-      }
-    } catch (error) {
-      console.error('Failed to fetch categories/startups:', error);
-    }
-  };
-
-  const fetchCategoryIcons = async () => {
-    try {
-      const response = await fetch(`${API}/products/category-icons`);
-      if (response.ok) {
-        const icons = await response.json();
-        setCategoryIcons(icons);
-      }
-    } catch (error) {
-      console.error('Failed to fetch category icons:', error);
-    }
-  };
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = selectedCategory === "All" || product.category === selectedCategory;
@@ -386,10 +374,18 @@ export default function Products() {
         <div className="overflow-x-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
-              <div className="col-span-full text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agri-green mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading products...</p>
-              </div>
+              // Improved Loading Skeleton UX
+              Array.from({ length: 8 }).map((_, idx) => (
+                <div key={idx} className="border rounded-xl p-4 shadow-sm animate-pulse bg-white h-[380px] flex flex-col">
+                  <div className="bg-gray-200 h-48 rounded-lg mb-4 w-full"></div>
+                  <div className="bg-gray-200 h-6 w-3/4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 w-1/2 rounded mb-4"></div>
+                  <div className="mt-auto flex justify-between">
+                    <div className="bg-gray-200 h-8 w-1/3 rounded"></div>
+                    <div className="bg-gray-200 h-8 w-1/3 rounded"></div>
+                  </div>
+                </div>
+              ))
             ) : (
               filteredProducts.map((product) => {
                 // Convert ApiProduct to Product format
