@@ -119,11 +119,14 @@ const App = () => (
                       </div>
                     </div>
                   </div>
-                  {/*<div className="border-t border-gray-700 mt-8 pt-8 text-center">
-                    <p className="text-gray-300">
-                      © 2025 Krishik Agri Business Incubator. All rights reserved.
+                  <div className="border-t border-gray-700 mt-6 pt-6 flex flex-col items-center text-center">
+                    <p className="text-gray-300 text-sm">
+                      © {new Date().getFullYear()} Krishik Agri Business Incubator. All rights reserved.
                     </p>
-                  </div>*/}
+                    <p className="text-gray-400 text-xs mt-2">
+                      Developed by <Link to="https://chandrashekar.vercel.app/" className="hover:text-agri-yellow transition-colors">Chandrashekar R</Link>
+                    </p>
+                  </div>
 
                 </div>
               </footer>

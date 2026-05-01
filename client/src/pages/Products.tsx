@@ -143,9 +143,12 @@ export default function Products() {
 
   useEffect(() => {
     fetchProducts(page, pageSize);
+  }, [page, pageSize]);
+
+  useEffect(() => {
     fetchCategoriesAndStartups();
     fetchCategoryIcons();
-  }, [page, pageSize]);
+  }, []);
 
   useEffect(() => {
     // If a filter is applied, show more products per page
