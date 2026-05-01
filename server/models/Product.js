@@ -40,6 +40,8 @@ productSchema.index({ category: 1 });
 productSchema.index({ startup: 1 });
 productSchema.index({ createdAt: -1 });
 productSchema.index({ 'primaryFocusArea.id': 1 });
+productSchema.index({ name: 1 }); // Index for fast sorting/searching by product name
+productSchema.index({ price: 1 }); // Index for fast sorting/filtering by price
 
 // Pre-save middleware to automatically assign focus areas based on category
 productSchema.pre('save', function(next) {
