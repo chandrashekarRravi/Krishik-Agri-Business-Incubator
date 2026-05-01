@@ -7,8 +7,18 @@ import jwt from 'jsonwebtoken';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import dotenv from 'dotenv';
+import NodeCache from 'node-cache';
 import { getAllFocusAreaDetails, categoryIcons } from '../utils/categoryMapping.js';
 const router = express.Router();
+
+// Initialize cache with 5 minutes (300 seconds) standard TTL
+const productCache = new NodeCache({ stdTTL: 300 });
+
+// Helper to clear cache on updates
+const clearProductCache = () => {
+  productCache.flushAll();
+  console.log('Product cache cleared due to data update');
+};
 // Cloudinary config
 
 
@@ -78,6 +88,15 @@ router.get('/', async (req, res) => {
       query.startup = { $regex: req.query.startup, $options: 'i' };
     }
 
+    // 1. Check if we have a cached response for this exact URL (with query params)
+    const cacheKey = req.originalUrl;
+    const cachedData = productCache.get(cacheKey);
+
+    if (cachedData) {
+      console.log('Returning products from Cache');
+      return res.json(cachedData);
+    }
+
     console.time('Products API Query');
 
     const [products, total] = await Promise.all([
@@ -91,12 +110,17 @@ router.get('/', async (req, res) => {
 
     console.timeEnd('Products API Query');
 
-    res.json({
+    const responseData = {
       products,
       total,
       page,
       totalPages: Math.ceil(total / limit)
-    });
+    };
+
+    // 2. Save the response in cache before sending
+    productCache.set(cacheKey, responseData);
+
+    res.json(responseData);
   } catch (err) {
     console.error('Products fetch error:', err);
     res.json({ products: [], total: 0, page: 1, totalPages: 1 });
@@ -116,8 +140,15 @@ router.get('/', async (req, res) => {
 // Get all unique focus areas
 router.get('/categories', async (req, res) => {
   try {
+    const cacheKey = 'categories';
+    const cached = productCache.get(cacheKey);
+    if (cached) return res.json(cached);
+
     const categories = await Product.distinct('category');
-    res.json(categories.filter(Boolean));
+    const responseData = categories.filter(Boolean);
+    
+    productCache.set(cacheKey, responseData, 86400); // Cache categories for 24 hours
+    res.json(responseData);
   } catch (err) {
     console.error('Categories fetch error:', err);
     // Return empty array if database is not connected
@@ -138,8 +169,15 @@ router.get('/categories', async (req, res) => {
 // Get all unique startups
 router.get('/startups', async (req, res) => {
   try {
+    const cacheKey = 'startups';
+    const cached = productCache.get(cacheKey);
+    if (cached) return res.json(cached);
+
     const startups = await Product.distinct('startup');
-    res.json(startups.filter(Boolean));
+    const responseData = startups.filter(Boolean);
+    
+    productCache.set(cacheKey, responseData, 86400); // Cache startups for 24 hours
+    res.json(responseData);
   } catch (err) {
     console.error('Startups fetch error:', err);
     // Return empty array if database is not connected
@@ -353,6 +391,10 @@ router.post('/', adminAuth, productUpload.array('image', 5), async (req, res) =>
     }
     const product = new Product(productData);
     await product.save();
+    
+    // Invalidate cache since a new product was added
+    clearProductCache();
+
     res.status(201).json(product);
   } catch (err) {
     // Enhanced error logging for debugging
@@ -435,6 +477,10 @@ router.put('/:id', adminAuth, productUpload.array('image', 5), async (req, res) 
     }
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
+    
+    // Invalidate cache
+    clearProductCache();
+
     res.json(product);
   } catch (err) {
     res.status(400).json({ message: 'Invalid data', error: err.message });
@@ -468,6 +514,10 @@ router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
+    
+    // Invalidate cache
+    clearProductCache();
+
     res.json({ message: 'Product deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -650,8 +700,13 @@ router.post('/bulk-upload', adminAuth, productUpload.single('file'), async (req,
       return res.status(400).json({ message: 'No valid products found in file' });
     }
     
+    
     // Insert products in bulk
     const result = await Product.insertMany(validProducts);
+    
+    // Invalidate cache after bulk upload
+    clearProductCache();
+
     res.status(201).json({ 
       message: 'Products uploaded successfully', 
       count: result.length,
