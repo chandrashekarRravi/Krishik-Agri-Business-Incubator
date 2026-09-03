@@ -131,7 +131,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ product, onSubmit, isSubmittin
                     className="flex-1 bg-agri-green hover:bg-agri-green/90 text-lg py-3 font-semibold shadow-md"
                     disabled={isSubmitting}
                 >
-                    {isSubmitting ? "Processing..." : "Proceed to Payment"}
+                    {isSubmitting ? "Processing..." : "Confirm Order"}
                 </Button>
                 <Button asChild className="flex-1 bg-agri-yellow text-agri-earth-dark hover:bg-agri-yellow/90 text-lg py-3 font-semibold shadow-md">
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">Buy via WhatsApp</a>

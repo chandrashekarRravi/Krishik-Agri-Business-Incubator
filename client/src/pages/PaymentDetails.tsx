@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -6,12 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function PaymentDetails() {
   const location = useLocation();
   const navigate = useNavigate();
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      navigate('/login');
-    }
-  }, [navigate]);
+
   const order = location.state?.order;
   const [form, setForm] = useState({
     upiId: "",

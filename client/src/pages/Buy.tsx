@@ -13,12 +13,6 @@ export default function Buy() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      navigate('/login');
-    }
-  }, [navigate]);
 
   useEffect(() => {
     if (!productId) {

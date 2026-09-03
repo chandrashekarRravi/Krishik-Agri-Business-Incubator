@@ -177,7 +177,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (!user.isAdmin) {
-            window.location.href = '/';
+            window.location.href = '/admin-login';
             return;
         }
         fetchData(productPage, productPageSize);

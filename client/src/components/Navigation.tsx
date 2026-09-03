@@ -1,36 +1,15 @@
-import { useState, useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
-  const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
-  const navigationItems = (() => {
-    const items: { name: string; href: string }[] = [
-      { name: "Products", href: "/products" },
-    ];
-    {/* if (user) items.push({ name: "Profile", href: "/profile" });
-    if (user?.isAdmin) items.push({ name: "Admin", href: "/admin" });
-    */} return items;
-  })();
 
-  useEffect(() => {
-    if (!avatarMenuOpen) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
-        setAvatarMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [avatarMenuOpen]);
+  const navigationItems: { name: string; href: string }[] = [
+    { name: "Products", href: "/products" },
+  ];
 
   return (
     <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -45,51 +24,16 @@ export function Navigation() {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                      ? "bg-agri-green text-white"
-                      : "text-foreground hover:bg-agri-green/10 hover:text-agri-green"
-                      }`}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-agri-green text-white"
+                        : "text-foreground hover:bg-agri-green/10 hover:text-agri-green"
+                    }`}
                   >
                     {item.name}
                   </Link>
                 );
               })}
-            </div>
-          </div>
-          {/* Avatar/Account section (right) */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center space-x-2">
-            <div className="relative" ref={avatarRef}>
-              <button onClick={() => setAvatarMenuOpen((v) => !v)} className="focus:outline-none">
-                <Avatar>
-                  <AvatarFallback>{user ? user.name?.[0]?.toUpperCase() : 'U'}</AvatarFallback>
-                </Avatar>
-              </button>
-              {avatarMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
-                  {user ? (
-                    <>
-                      <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setAvatarMenuOpen(false)}>Profile</Link>
-                      {user.isAdmin && (
-                        <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setAvatarMenuOpen(false)}>Admin Dashboard</Link>
-                      )}
-                      <button
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => {
-                          localStorage.removeItem('token');
-                          localStorage.removeItem('user');
-                          setAvatarMenuOpen(false);
-                          navigate('/login');
-                        }}
-                      >Logout</button>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/register" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setAvatarMenuOpen(false)}>Register</Link>
-                      <Link to="/login" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setAvatarMenuOpen(false)}>Login</Link>
-                    </>
-                  )}
-                </div>
-              )}
             </div>
           </div>
           {/* Mobile menu button */}
@@ -115,19 +59,16 @@ export function Navigation() {
                     key={item.name}
                     to={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive
-                      ? "bg-agri-green text-white"
-                      : "text-foreground hover:bg-agri-green/10 hover:text-agri-green"
-                      }`}
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      isActive
+                        ? "bg-agri-green text-white"
+                        : "text-foreground hover:bg-agri-green/10 hover:text-agri-green"
+                    }`}
                   >
                     {item.name}
                   </Link>
                 );
               })}
-              <div className="mt-2 border-t pt-2">
-                <Link to="/register" className="block px-4 py-2 hover:bg-gray-100">Register</Link>
-                <Link to="/login" className="block px-4 py-2 hover:bg-gray-100">Login</Link>
-              </div>
             </div>
           </div>
         )}

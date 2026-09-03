@@ -16,10 +16,8 @@ import Buy from "./pages/Buy";
 import Payment from "./pages/Payment";
 import OrderSummary from "./pages/OrderSummary";
 import PaymentDetails from "./pages/PaymentDetails";
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
 import { Navigation } from "@/components/Navigation";
 import { Phone, Mail } from 'lucide-react';
 
@@ -61,10 +59,8 @@ const App = () => (
                 <Route path="/payment" element={<><Navigation /><Payment /></>} />
                 <Route path="/payment-details" element={<><Navigation /><PaymentDetails /></>} />
                 <Route path="/order-summary" element={<><Navigation /><OrderSummary /></>} />
-                <Route path="/register" element={<><Navigation /><Register /></>} />
-                <Route path="/login" element={<><Navigation /><Login /></>} />
-                <Route path="/profile" element={<><Navigation /><Profile /></>} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin-login" element={<AdminLogin />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -98,9 +94,6 @@ const App = () => (
                       <h3 className="text-lg sm:text-xl font-bold mb-4">Quick Links</h3>
                       <ul className="space-y-2">
                         <li><Link to="/products" className="text-gray-300 hover:text-agri-yellow transition-colors text-sm sm:text-base">Products</Link></li>
-                        <li><Link to="/profile" className="text-gray-300 hover:text-agri-yellow transition-colors text-sm sm:text-base">Profile</Link></li>
-                        {/* Admin link visible; actual access should be protected server-side */}
-                        <li><Link to="/admin" className="text-gray-300 hover:text-agri-yellow transition-colors text-sm sm:text-base">Admin</Link></li>
                       </ul>
                     </div>
                     <div>
@@ -136,8 +129,9 @@ const App = () => (
                     <p className="text-gray-300 text-sm">
                       © {new Date().getFullYear()} Krishik Agri Business Incubator. All rights reserved.
                     </p>
+                    <p>Managed by <Link to="https://krishik-abiuasd.org/" className="hover:text-agri-yellow transition-colors">krishik-abiuasd.org</Link></p>
                     <p className="text-gray-400 text-xs mt-2">
-                      Developed by <Link to="https://chandrashekar.vercel.app/" className="hover:text-agri-yellow transition-colors">Chandrashekar R</Link>
+                      Developed by <Link to="https://chandrashekar.vercel.app/csr-forge" className="hover:text-agri-yellow transition-colors">Chandrashekar R</Link>
                     </p>
                   </div>
 

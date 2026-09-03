@@ -30,17 +30,6 @@ export default function Payment() {
     }
   }, [location, navigate]);
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      navigate('/login');
-    } else {
-      // Check if user is admin
-      const userData = JSON.parse(user);
-      setIsAdmin(userData.isAdmin || false);
-    }
-  }, [navigate]);
-
   if (!order) return null;
   // Claculate platfrom fee
   const platformFee = Number(order.product.price.replace(/[^\d.]/g, '')) * 0.1;
