@@ -131,7 +131,7 @@ const App = () => (
                     </p>
                     <p>Managed by <Link to="https://krishik-abiuasd.org/" className="hover:text-agri-yellow transition-colors">krishik-abiuasd.org</Link></p>
                     <p className="text-gray-400 text-xs mt-2">
-                      Developed by <Link to="https://chandrashekar.vercel.app/csr-forge" className="hover:text-agri-yellow transition-colors">Chandrashekar R</Link>
+                      Developed by <Link to="https://chandrashekar.vercel.app/" className="hover:text-agri-yellow transition-colors">Chandrashekar R</Link>
                     </p>
                   </div>
 
